@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class Entity : MonoBehaviour
 {
-    public int maxHealth = 100;
+    public int maxHealth = 1000;
     private int currentHealth;
 
     public bool Hurt;
@@ -21,7 +21,7 @@ public class Entity : MonoBehaviour
     {
         currentHealth -= damage;
         Hurt = true;
-
+        Debug.Log(gameObject.name + " a pris " + damage + " points de dégats. Santé restante: " + currentHealth);
         if (currentHealth <= 0)
         {
             Dead();

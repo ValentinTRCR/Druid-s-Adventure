@@ -5,6 +5,8 @@ TagManager:
   serializedVersion: 3
   tags:
   - Sol
+  - Ennemy
+  - Wall
   layers:
   - Default
   - TransparentFX

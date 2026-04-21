@@ -81,6 +81,7 @@ public class GestionPersonnage : MonoBehaviour
                 bear.enabled = true;
                 bird.enabled = false;
                 //gameObject
+                
                 BearGo.SetActive(true);
                 DruideGo.SetActive(false);
                 FishGo.SetActive(false);

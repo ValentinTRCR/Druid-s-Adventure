@@ -47,25 +47,25 @@ public class Water : MonoBehaviour
     {
         Debug.Log("OnTriggerStay2D" + collision.gameObject.name);
         player = collision.gameObject;
-        if(player.name == "BearsObject")
+        if(player.name == "Ours")
         {
             bearCs = player.GetComponentInParent<Bear>();
             entite = bearCs;
             entite.IsInWater = true;
         }
-        if(player.name == "WizardObject")
+        if(player.name == "Druide")
         {
             DruideCs = player.GetComponentInParent<Player>();
             entite = DruideCs;
             entite.IsInWater = true;
         }
-        if(player.name == "FishObject")
+        if(player.name == "Poisson")
         {
             fishCs = player.GetComponentInParent<Fish>();
             entite = fishCs;
             entite.IsInWater = true;
         }
-        if(player.name == "BirdsObject")
+        if(player.name == "Oiseau")
         {
             birdCs = player.GetComponentInParent<Bird>();
             entite = birdCs;

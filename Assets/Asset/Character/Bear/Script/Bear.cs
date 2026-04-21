@@ -15,6 +15,14 @@ public class Bear : Entity
 
     DetectionSolDroite detectionSolDroite;
     DetectionSolGauche detectionSolGauche;
+
+    Entity entityEnnemy;
+
+
+    bool isAttacking = false;
+
+    //CanAttack canAttack;
+    CanAttack canAttack;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -23,6 +31,7 @@ public class Bear : Entity
         animator = bear.GetComponentInChildren<Animator>();
         detectionSolDroite = bear.GetComponentInChildren<DetectionSolDroite>();
         detectionSolGauche = bear.GetComponentInChildren<DetectionSolGauche>();
+        canAttack = bear.GetComponent<CanAttack>();
         maxHealth = 1;
     }
 
@@ -91,11 +100,28 @@ public class Bear : Entity
 
     void OnAttack(InputValue value)
     {
-        if (value.isPressed)
+        if (value.isPressed && isAttacking == false)
         {
+            isAttacking = true;
             animator.SetTrigger("Attack");
         }
     }
+
+    public void EnleverDegat()
+    {       entityEnnemy = canAttack.entityEnnemy;
+        if (entityEnnemy != null)
+        {
+            entityEnnemy.TakeDamage(1);
+            entityEnnemy = null;
+        }
+    }
+
+    public void ResetAttack()
+    {
+        isAttacking = false;
+    }
+
+    
 
 
 }

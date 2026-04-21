@@ -81,7 +81,7 @@ public class Fish : Entity
             spriteRenderer.flipY = false;
         }
 
-        anim.SetBool("IsSwimming", (movex > 0.1 || movex < -0.1 || movey > 0.1 || movey < -0.1) && IsInWater);
+        //anim.SetBool("IsSwimming", (movex > 0.1 || movex < -0.1 || movey > 0.1 || movey < -0.1) && IsInWater);
     }
 
     
