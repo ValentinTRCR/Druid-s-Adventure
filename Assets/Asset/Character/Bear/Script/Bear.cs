@@ -3,7 +3,7 @@ using UnityEngine.InputSystem;
 
 public class Bear : Entity
 {
-    float movex;
+   
 
     public GameObject bear;
     float directionX;
@@ -37,6 +37,7 @@ public class Bear : Entity
 
     void FixedUpdate()
     {
+        
         float directionX = movex;
 
         // Bloquer vers la droite si pas de sol à droite

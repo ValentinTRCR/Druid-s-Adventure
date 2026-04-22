@@ -53,22 +53,22 @@ public class spikeGroundScript : MonoBehaviour
       
         Debug.Log("OnTriggerEnter2D" + collision.gameObject.name);
         player = collision.gameObject;
-        if(player.name == "BearsObject")
+        if(player.name == "Ours")
         {
             entity = player.GetComponentInParent<Bear>();
             
         }
-        if(player.name == "WizardObject")
+        if(player.name == "Druide")
         {
             entity = player.GetComponentInParent<Player>();
            
         }
-        if(player.name == "FishObject")
+        if(player.name == "Poisson")
         {
             entity = player.GetComponentInParent<Fish>();
             
         }
-        if(player.name == "BirdsObject")
+        if(player.name == "Oiseau")
         {
             entity = player.GetComponentInParent<Bird>();
             

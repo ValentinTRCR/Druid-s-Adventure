@@ -11,8 +11,6 @@ public class Player : Entity
 
     bool jump = true;
 
-    private float movex;
-
     private float movey;
 
 

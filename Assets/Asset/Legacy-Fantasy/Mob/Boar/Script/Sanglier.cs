@@ -61,7 +61,7 @@ public class Sanglier : Entity
     // Update is called once per frame
     void Update()
     {
-        if(detecterPlayer.chasePlayer && currentState != State.Stunt)
+        if (detecterPlayer.chasePlayer && currentState != State.Stunt)
         {
             currentState = State.Chase;
             speed = chaseSpeed;
@@ -85,14 +85,8 @@ public class Sanglier : Entity
     void Patrouille()
     {
         verifierSiIlestAuSolOuEstBloqueParUnMur();
-
         Flip();
-
         rb.linearVelocity = new Vector2(direction * speed, rb.linearVelocity.y);
-
-
-
-
     }
 
     void verifierSiIlestAuSolOuEstBloqueParUnMur()
@@ -124,11 +118,7 @@ public class Sanglier : Entity
     void Chase()
     {
         rb.linearVelocity = new Vector2(direction * speed, rb.linearVelocity.y);
-        
         Flip();
-
-
-
 
         if (chaseTime < maxChaseTime)
         {
@@ -157,7 +147,6 @@ public class Sanglier : Entity
             currentState = State.Patrouille;
             stuntTime = 0f;
         }
-
     }
 
     void GererAnimation()
@@ -186,9 +175,6 @@ public class Sanglier : Entity
             Hurt = false;
         }
     }
-
-    
-   
 
     //fonction pour savoir si il rentre en collision avec le joueur ou un mur
     //si cette un joueur il lui inflige des dégats et le repousse sinon il rentre en stunt
@@ -223,7 +209,7 @@ public class Sanglier : Entity
             {
                 //Debug.Log("Player touché par le sanglier");
                 EnleverDegat();
-                
+
             }
         }
         if (collision.gameObject.tag == "Wall" && currentState == State.Chase)
@@ -239,14 +225,12 @@ public class Sanglier : Entity
         if (entity != null)
         {
             entity.TakeDamage(1);
-            player.GetComponent<Rigidbody2D>().AddForce(new Vector2(50, 10), ForceMode2D.Impulse);
+            player.GetComponent<Rigidbody2D>().AddForce(new Vector2(direction * 200, 10), ForceMode2D.Impulse);
             entity = null;
         }
         else
         {
             Debug.Log("Player est null");
         }
-
-
     }
 }

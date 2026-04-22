@@ -10,7 +10,6 @@ public class Fish : Entity
 
     Animator anim;
 
-    float movex;
     float movey;
 
     float speed = 7f;

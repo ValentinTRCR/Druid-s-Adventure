@@ -2,9 +2,10 @@ using UnityEngine;
 
 public class Entity : MonoBehaviour
 {
-    public int maxHealth = 1000;
+    public int maxHealth = 100;
     private int currentHealth;
 
+    public float movex;
     public bool Hurt;
 
     public bool IsDead;

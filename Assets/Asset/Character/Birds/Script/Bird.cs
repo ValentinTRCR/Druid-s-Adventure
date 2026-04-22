@@ -8,8 +8,6 @@ public class Bird : Entity
     private Rigidbody2D rb;
 
     Animator anim;
-
-    float movex;
     float movey;
 
     public float speed = 3;

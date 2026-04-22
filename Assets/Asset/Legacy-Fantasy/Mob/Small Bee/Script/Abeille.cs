@@ -1,14 +1,88 @@
 using System;
+using System.Data.Common;
+using System.Runtime.CompilerServices;
+using Unity.VisualScripting;
+using UnityEditor.Experimental.GraphView;
+using UnityEditor.ShaderGraph.Internal;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 public class Abeille : Entity
 {
     public enum State
     {
         Patrouille,
-        Chase,
+        FlyUp,
+        Dive,
         Stunt,
-        }
+    }
+    enum FlyPhase
+    {
+        AllerAuCentre,
+        AllerAGauche,
+        AllerADroite,
+        Fini
+    }
+
+    private FlyPhase flyPhase = FlyPhase.AllerAuCentre;
+    public State currentState;
+
+    private Rigidbody2D rb;
+    private Animator anim;
+    private SpriteRenderer sr;
+
+    private float speed;
+
+    private float patrolSpeed = 2f;
+
+    private float flyUpSpeed = 4f;
+
+    private float diveSpeed = 10f;
+
+    private float stunDuration = 4f;
+    private float stunTimer = 0f;
+
+    private float direction = 1;
+
+    public GameObject DetecteurDroit;
+    public GameObject DetecteurGauche;
+
+    public GameObject DetecteurPlayerEtSol;
+
+    DetecterObstacle detecterObstacleDroit;
+    DetecterObstacle detecterObstacleGauche;
+
+    DetecterEnnemiSol detecterEnnemiSol;
+
+    GameObject Sol;
+
+    GameObject player;
+
+    float distanceEntreAbeilleEtSol;
+    float distanceMaxEntreAbeilleEtSol = 5.5f;
+    float distanceMinEntreAbeilleEtSol = 4.5f;
+
+    float distanceActuelleEntreAbeilleEtSol;
+
+    //FlyUp
+
+    //Calcul Distance Y
+    float distanceActuelleEntreAbeilleEtPlayer;
+    float distanceMaxEntreAbeilleEtPlayer = 5.5f;
+    float distanceMinEntreAbeilleEtPlayer = 4.5f;
+    //Calcul Distance X    
+
+    bool IsAttacking = false;
+
+    float flyUpTimer = 0f;
+    float maxFlyUpTime = 3.5f;
+    //position du joueur au moment du dive;
+    Transform targetPlayerPosition;
+
+    Entity entity;
+
+    Vector2 directionBee;
+
 
 
 
@@ -16,11 +90,275 @@ public class Abeille : Entity
     void Start()
     {
         base.Start();
+        rb = GetComponent<Rigidbody2D>();
+        anim = GetComponentInChildren<Animator>();
+        sr = GetComponentInChildren<SpriteRenderer>();
+        detecterObstacleDroit = DetecteurDroit.GetComponent<DetecterObstacle>();
+        detecterObstacleGauche = DetecteurGauche.GetComponent<DetecterObstacle>();
+        currentState = State.Patrouille;
+        detecterEnnemiSol = DetecteurPlayerEtSol.GetComponent<DetecterEnnemiSol>();
+        speed = patrolSpeed;
     }
 
     // Update is called once per frame
     void Update()
     {
+        if (Hurt == true)
+        {
+            anim.SetTrigger("Hurt");
+            Hurt = false;
+        }
+        else
+        {
+            flip();
+            if (detecterEnnemiSol.player != null && !IsAttacking)
+            {
+                player = detecterEnnemiSol.player;
+                currentState = State.FlyUp;
+            }
+            switch (currentState)
+            {
+                case State.Patrouille:
+                    // Logique de patrouille
+                    Patrouille();
+                    break;
+                case State.FlyUp:
+                    FlyUp();
+                    // Logique de vol vers le haut
+                    break;
+                case State.Dive:
+                    Dive();
+                    // Logique de plongée
+                    break;
+                case State.Stunt:
+                    Stunt();
+                    // Logique de stun
+                    break;
+            }
+        }
 
     }
+    void flip()
+    {
+        if (direction == 1)
+        {
+            sr.flipX = true;
+        }
+        else
+        {
+            sr.flipX = false;
+        }
+    }
+
+    void Patrouille()
+    {
+        speed = patrolSpeed;
+        rb.linearVelocity = new Vector2(direction * speed, rb.linearVelocity.y);
+        if (detecterObstacleDroit.isObstacleDetected)
+        {
+            direction = -1;
+        }
+        else if (detecterObstacleGauche.isObstacleDetected)
+        {
+            direction = 1;
+        }
+
+        if (detecterEnnemiSol.sol != null)
+        {
+            distanceActuelleEntreAbeilleEtSol = Mathf.Abs(transform.position.y - detecterEnnemiSol.sol.transform.position.y);
+
+        }
+        else
+        {
+            distanceActuelleEntreAbeilleEtSol = float.MaxValue;
+
+        }
+
+        if (distanceActuelleEntreAbeilleEtSol < distanceMinEntreAbeilleEtSol)
+        {
+            rb.linearVelocity = new Vector2(rb.linearVelocity.x, speed);
+        }
+        else if (distanceActuelleEntreAbeilleEtSol > distanceMaxEntreAbeilleEtSol)
+        {
+            rb.linearVelocity = new Vector2(rb.linearVelocity.x, -speed);
+        }
+        else
+        {
+            rb.linearVelocity = new Vector2(rb.linearVelocity.x, 0);
+        }
+    }
+
+    //contient du code générer par l'ia
+    void FlyUp()
+    {
+        IsAttacking = true;
+        if (player == null) return;
+
+        float velocityX = 0f;
+        float velocityY = 0f;
+
+        speed = flyUpSpeed;
+
+
+        float distanceY = transform.position.y - player.transform.position.y;
+
+        if (distanceY < distanceMinEntreAbeilleEtPlayer)
+        {
+            velocityY = speed;
+        }
+        else if (distanceY > distanceMaxEntreAbeilleEtPlayer)
+        {
+            velocityY = -speed;
+        }
+        else
+        {
+            velocityY = 0f;
+        }
+
+
+        float positionCibleX = player.transform.position.x;
+        float pointGauche = positionCibleX - 2.5f;
+        float pointDroit = positionCibleX + 2.5f;
+
+        float marge = 0.1f;
+
+
+        switch (flyPhase)
+        {
+            case FlyPhase.AllerAuCentre:
+                if (transform.position.x < positionCibleX - marge)
+                {
+                    velocityX = speed;
+                }
+                else if (transform.position.x > positionCibleX + marge)
+                {
+                    velocityX = -speed;
+                }
+                else
+                {
+                    flyPhase = FlyPhase.AllerAGauche;
+                }
+                break;
+
+            case FlyPhase.AllerAGauche:
+                if (transform.position.x > pointGauche + marge)
+                {
+                    velocityX = -speed;
+                }
+                else
+                {
+                    flyPhase = FlyPhase.AllerADroite;
+                }
+                break;
+
+            case FlyPhase.AllerADroite:
+                if (transform.position.x < pointDroit - marge)
+                {
+                    velocityX = speed;
+                }
+                else
+                {
+                    flyPhase = FlyPhase.AllerAGauche;
+                }
+                break;
+
+            case FlyPhase.Fini:
+                Debug.Log("Fin de la phase de vol vers le haut");
+                currentState = State.Dive;
+                flyPhase = FlyPhase.AllerAuCentre;
+                break;
+        }
+
+        rb.linearVelocity = new Vector2(velocityX, velocityY);
+        flyUpTimer += Time.deltaTime;
+        if (flyUpTimer >= maxFlyUpTime)
+        {
+            flyUpTimer = 0f;
+            flyPhase = FlyPhase.Fini;
+        }
+    }
+
+    void Dive()
+    {
+        if (targetPlayerPosition == null)
+        {
+            targetPlayerPosition = player.transform;
+            directionBee = (targetPlayerPosition.position - transform.position).normalized;
+        }
+
+
+        rb.linearVelocity = directionBee * diveSpeed;
+
+
+
+
+    }
+
+    void Stunt()
+    {
+        stunTimer += Time.deltaTime;
+        rb.linearVelocity = Vector2.zero;
+        if (stunTimer >= stunDuration)
+        {
+            stunTimer = 0f;
+            currentState = State.Patrouille;
+            IsAttacking = false;
+            targetPlayerPosition = null;
+        }
+    }
+
+
+    void OnCollisionEnter2D(Collision2D collision)
+    {
+        if (collision.gameObject.CompareTag("Player") && currentState == State.Dive)
+        {
+            player = collision.gameObject;
+            if (player.name == "Ours")
+            {
+                entity = player.GetComponentInParent<Bear>();
+
+            }
+            if (player.name == "Druide")
+            {
+                entity = player.GetComponentInParent<Player>();
+
+            }
+            if (player.name == "Poisson")
+            {
+                entity = player.GetComponentInParent<Fish>();
+
+            }
+            if (player.name == "Oiseau")
+            {
+                entity = player.GetComponentInParent<Bird>();
+
+            }
+
+            if (entity != null && entity.Hurt == false)
+            {
+                //Debug.Log("Player touché par l'abeille");
+                EnleverDegat();
+
+            }
+        }
+        else if (currentState == State.Dive)
+        {
+            currentState = State.Stunt;
+            stunTimer = 0f;
+        }
+    }
+
+    void EnleverDegat()
+    {
+        if (entity != null)
+        {
+            anim.SetTrigger("Attack");
+            entity.TakeDamage(1);
+            entity = null;
+            currentState = State.Patrouille;
+            IsAttacking = false; // Permettre de réattaquer
+        }
+    }
+
+
 }
