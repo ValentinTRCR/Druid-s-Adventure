@@ -103,6 +103,7 @@ public class Abeille : Entity
     // Update is called once per frame
     void Update()
     {
+        //Debug.Log(currentState);
         if (Hurt == true)
         {
             anim.SetTrigger("Hurt");
@@ -192,7 +193,12 @@ public class Abeille : Entity
     void FlyUp()
     {
         IsAttacking = true;
-        if (player == null) return;
+        if (player == null)
+        {
+            currentState = State.Patrouille;
+            return;
+        }
+        
 
         float velocityX = 0f;
         float velocityY = 0f;
@@ -284,13 +290,10 @@ public class Abeille : Entity
         {
             targetPlayerPosition = player.transform;
             directionBee = (targetPlayerPosition.position - transform.position).normalized;
+            
+            return;
         }
-
-
         rb.linearVelocity = directionBee * diveSpeed;
-
-
-
 
     }
 
@@ -348,6 +351,16 @@ public class Abeille : Entity
         }
     }
 
+    void OnCollisionStay2D(Collision2D collision)
+    {
+        if(currentState == State.Dive)
+        {
+            currentState = State.Patrouille;
+            stunTimer = 0f;
+        }
+
+    }
+
     void EnleverDegat()
     {
         if (entity != null)
@@ -357,6 +370,7 @@ public class Abeille : Entity
             entity = null;
             currentState = State.Patrouille;
             IsAttacking = false; // Permettre de réattaquer
+            targetPlayerPosition = null; // Réinitialiser la position cible du joueur
         }
     }
 

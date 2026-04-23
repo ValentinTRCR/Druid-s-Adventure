@@ -105,6 +105,7 @@ public class Bear : Entity
         {
             isAttacking = true;
             animator.SetTrigger("Attack");
+            Invoke("ResetAttack", 0.5f); // Réinitialise l'état d'attaque après 0.5 secondes
         }
     }
 

@@ -26,6 +26,8 @@ public class Player : Entity
 
     Animator anim;
 
+    DetectionInteraction detectionInteraction;
+
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -35,6 +37,7 @@ public class Player : Entity
         capsuleCollider2D = Druide.GetComponent<CapsuleCollider2D>();
         offsetxRight = capsuleCollider2D.offset.x;
         anim = Druide.GetComponentInChildren<Animator>();
+        detectionInteraction = Druide.GetComponentInChildren<DetectionInteraction>();
         base.Start();
     }
 
@@ -49,6 +52,7 @@ public class Player : Entity
         }
         else
         {
+            rb.gravityScale = 1f;
             rb.linearVelocity = new Vector2(movex * speed, rb.linearVelocity.y);
         }
         gererAnimation();
@@ -67,6 +71,17 @@ public class Player : Entity
         {
             rb.AddForce(new Vector2(0, jumpForce), ForceMode2D.Impulse);
             jump = true;
+        }
+    }
+
+    void OnInteract(InputValue value)
+    {
+        if(value.isPressed)
+        {
+            GameObject objectToCollect = detectionInteraction.ObjectToCollect;
+            objectToCollect.transform.SetParent(Druide.transform);
+            objectToCollect.GetComponentInChildren<SpriteRenderer>().enabled = false;
+            objectToCollect.GetComponent<Collider2D>().enabled = false;
         }
     }
 

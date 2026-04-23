@@ -101,6 +101,14 @@ public class Sanglier : Entity
 
             direction = -1f;
         }
+        if(detectionDroite.bloquer == true)
+        {
+            direction = -1f;
+        }
+        else if(detectionGauche.bloquer == true)
+        {
+            direction = 1f;
+        }
     }
 
     void Flip()

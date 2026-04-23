@@ -3,10 +3,14 @@ using UnityEngine;
 public class DetectionSolGauche : MonoBehaviour
 {
     public bool estAuSolGauche;
+    public bool bloquer;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void OnTriggerEnter2D(Collider2D collision)
     {
-        Debug.Log("OnTriggerEnter2D");
+       if(collision.gameObject.tag == "Wall")
+        {
+           bloquer = true;
+        }
         if (collision.gameObject.tag == "Sol")
         {
             estAuSolGauche = true;
@@ -15,6 +19,10 @@ public class DetectionSolGauche : MonoBehaviour
 
     void OnTriggerStay2D(Collider2D collision)
     {
+        if(collision.gameObject.tag == "Wall")
+        {
+           bloquer = true;
+        }
         if (collision.gameObject.tag == "Sol")
         {
             estAuSolGauche = true;
@@ -27,6 +35,10 @@ public class DetectionSolGauche : MonoBehaviour
         if (collision.gameObject.tag == "Sol")
         {
             estAuSolGauche = false;
+        }
+        if(collision.gameObject.tag == "Wall")
+        {
+            bloquer = false;
         }
     }
 }
