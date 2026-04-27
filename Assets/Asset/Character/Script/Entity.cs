@@ -1,3 +1,4 @@
+using NUnit.Framework;
 using UnityEngine;
 
 public class Entity : MonoBehaviour
@@ -8,6 +9,7 @@ public class Entity : MonoBehaviour
     public float movex;
     public bool Hurt;
 
+    public bool HaveDeadAnimation = false;
     public bool IsDead;
 
     public bool IsInWater = false;
@@ -15,14 +17,13 @@ public class Entity : MonoBehaviour
     public void Start()
     {
         currentHealth = maxHealth;
-        
+        IsDead = false;
     }
 
     public void TakeDamage(int damage)
     {
         currentHealth -= damage;
         Hurt = true;
-        Debug.Log(gameObject.name + " a pris " + damage + " points de dégats. Santé restante: " + currentHealth);
         if (currentHealth <= 0)
         {
             Dead();
@@ -31,8 +32,13 @@ public class Entity : MonoBehaviour
 
     private void Dead()
     {
+       
+        if (HaveDeadAnimation)
+        {
+           Invoke("LancerAnimation", 0.5f);
+        }
         IsDead = true;
-        Invoke("LancerAnimation", 0.5f);
+        
     }
 
     private void LancerAnimation()

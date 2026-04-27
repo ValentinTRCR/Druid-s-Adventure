@@ -1,12 +1,4 @@
-using System;
-using System.Data.Common;
-using System.Runtime.CompilerServices;
-using Unity.VisualScripting;
-using UnityEditor.Experimental.GraphView;
-using UnityEditor.ShaderGraph.Internal;
 using UnityEngine;
-using UnityEngine.UIElements;
-
 public class Abeille : Entity
 {
     public enum State
@@ -167,12 +159,10 @@ public class Abeille : Entity
         if (detecterEnnemiSol.sol != null)
         {
             distanceActuelleEntreAbeilleEtSol = Mathf.Abs(transform.position.y - detecterEnnemiSol.sol.transform.position.y);
-
         }
         else
         {
             distanceActuelleEntreAbeilleEtSol = float.MaxValue;
-
         }
 
         if (distanceActuelleEntreAbeilleEtSol < distanceMinEntreAbeilleEtSol)
@@ -221,13 +211,11 @@ public class Abeille : Entity
             velocityY = 0f;
         }
 
-
         float positionCibleX = player.transform.position.x;
         float pointGauche = positionCibleX - 2.5f;
         float pointDroit = positionCibleX + 2.5f;
 
         float marge = 0.1f;
-
 
         switch (flyPhase)
         {
@@ -269,7 +257,7 @@ public class Abeille : Entity
                 break;
 
             case FlyPhase.Fini:
-                Debug.Log("Fin de la phase de vol vers le haut");
+                //Debug.Log("Fin de la phase de vol vers le haut");
                 currentState = State.Dive;
                 flyPhase = FlyPhase.AllerAuCentre;
                 break;
@@ -369,10 +357,8 @@ public class Abeille : Entity
             entity.TakeDamage(1);
             entity = null;
             currentState = State.Patrouille;
-            IsAttacking = false; // Permettre de réattaquer
-            targetPlayerPosition = null; // Réinitialiser la position cible du joueur
+            IsAttacking = false; 
+            targetPlayerPosition = null; 
         }
     }
-
-
 }

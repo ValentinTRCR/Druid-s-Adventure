@@ -5,6 +5,8 @@ public class FollowCamera : MonoBehaviour
     private GameObject target; 
     public GameObject player;
     GestionPersonnage gestionPersonnage;
+
+    public int offsetZ = 0;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -32,6 +34,6 @@ public class FollowCamera : MonoBehaviour
             target = gestionPersonnage.BirdGo;
         }
 
-        transform.position = new Vector3(target.transform.position.x, target.transform.position.y, -10);
+        transform.position = new Vector3(target.transform.position.x, target.transform.position.y, offsetZ);
     }
 }

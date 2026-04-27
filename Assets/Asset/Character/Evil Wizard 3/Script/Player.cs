@@ -79,9 +79,12 @@ public class Player : Entity
         if(value.isPressed)
         {
             GameObject objectToCollect = detectionInteraction.ObjectToCollect;
-            objectToCollect.transform.SetParent(Druide.transform);
-            objectToCollect.GetComponentInChildren<SpriteRenderer>().enabled = false;
-            objectToCollect.GetComponent<Collider2D>().enabled = false;
+            if(objectToCollect != null)
+            {
+                objectToCollect.transform.SetParent(Druide.transform);
+                objectToCollect.GetComponentInChildren<SpriteRenderer>().enabled = false;
+                objectToCollect.GetComponent<Collider2D>().enabled = false;
+            }
         }
     }
 
