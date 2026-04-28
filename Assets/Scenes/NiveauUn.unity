@@ -94013,7 +94013,7 @@ Transform:
   m_GameObject: {fileID: 1729600670}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 38.545, y: 21.8116, z: 0}
+  m_LocalPosition: {x: 38.545, y: 20.9, z: 0}
   m_LocalScale: {x: 26.47716, y: 19.361399, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -106944,6 +106944,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 2484721992714361757, guid: cd71aebe75b50584c822fb4367f7afcc, type: 3}
+      propertyPath: maxHealth
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 5357781044766345278, guid: cd71aebe75b50584c822fb4367f7afcc, type: 3}
       propertyPath: m_Name
       value: Sanglier
@@ -106968,6 +106972,10 @@ PrefabInstance:
     - target: {fileID: 215136196421229977, guid: 541878aab4d833b40bf8365e347522ff, type: 3}
       propertyPath: m_Name
       value: Abeille
+      objectReference: {fileID: 0}
+    - target: {fileID: 460340856689926571, guid: 541878aab4d833b40bf8365e347522ff, type: 3}
+      propertyPath: maxHealth
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 982498024904181847, guid: 541878aab4d833b40bf8365e347522ff, type: 3}
       propertyPath: m_LocalPosition.x
