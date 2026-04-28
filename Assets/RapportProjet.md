@@ -44,32 +44,85 @@
 
 
 
-1.1 Context du projet
+1.1 Contexte du projet
 
-Dans le cadre de mon projet Travail Pratique Individuel (TPI), j'ai dû dévelloper un jeux type Platformer.Le but de ce projet est de validé mes capacités de programmation en c# ainsi qu'en documentation et plannification.Ce projet répond au cahier des charges réalisé par mon formateur M.Aliprandi et revue par mes experts M.Ferri et M.Murisier.
+Dans le cadre de mon Travail Pratique Individuel (TPI), j’ai développé un jeu vidéo de type platformer 2D intitulé Druid’s Adventure.
+Ce projet s’inscrit dans un cadre pédagogique visant à valider mes compétences en développement logiciel, en particulier en C# avec le moteur Unity, ainsi qu’en gestion de projet, planification et documentation technique.
 
-Le projet doit contenir ces fonctionnalitées
-- Druide qui peut se transformer en plusieur animaux
-- gestion de mana et de vie 
-- 3 ennemie du druide ainsi qu'un obstacle et un objet d'interaction
-- Plusieur écran (Accueil,choix niveaux,en jeu,fin de partie)
-- Sauvegarde de donnée pour le Mana et la vie en dur
+L’objectif principal est de concevoir une application interactive intégrant plusieurs mécaniques de jeu, tout en respectant les exigences du cahier des charges fourni par mon formateur M. Aliprandi et validé par mes experts M. Ferri et M. Murisier.
 
-L'application sera développée en C# avec le moteur graphique unity en version 6.* 
+Ce projet présente plusieurs enjeux :
 
-1.2 Objectif du tpi
+Mettre en œuvre un système de gameplay dynamique basé sur la transformation du personnage
+Gérer des systèmes de ressources (mana, points de vie)
+Concevoir une architecture logicielle claire et maintenable
+Produire une documentation conforme aux exigences du TPI
 
-Le principal objectif de ce projet est de tester mes capacité en c# ainsi qu'en gestion de projet. Pour atteindre cette objectif je dois produire un jeux 2D avec des mécanique prédéfinis dans mon cahier des charges comme par exemple:
-- transformation de mon personnage 
-- adaption de la physique du personnage selon son environnement et sa transformation
-- gestion de ressource 
-- UI/UX
-En complément ce projet me permet de m'améliorer avec: 
-- le moteur de jeu unity
-- la gestion de projet 
-- les testes fonctionnels
+Le jeu comprend notamment :
 
-1.3 En Annexe
+Un druide capable de se transformer en plusieurs animaux
+Un système de gestion de mana et de points de vie
+Trois ennemis, un obstacle et un objet interactif
+Plusieurs écrans (menu, sélection de niveau, jeu, fin)
+Une sauvegarde des données (mana et vie)
 
+1.2 Objectifs du TPI
+
+Le principal objectif de ce projet est de démontrer mes compétences en développement C# et en gestion de projet informatique, en réalisant un jeu fonctionnel répondant aux contraintes définies dans le cahier des charges.
+
+Pour atteindre cet objectif, plusieurs sous-objectifs ont été définis :
+
+Objectifs techniques
+Implémenter un système de transformation du personnage (druide → animaux)
+Adapter la physique selon la transformation et l’environnement
+Mettre en place une gestion des ressources (mana, vie)
+Développer une interface utilisateur (UI/UX) claire et fonctionnelle
+Objectifs méthodologiques
+Planifier le projet et respecter les délais
+Utiliser un système de versioning (Git)
+Mettre en place des tests pour valider les fonctionnalités
+Compétences développées
+Utilisation avancée du moteur Unity
+Programmation orientée objet en C#
+Gestion de projet (planification, organisation)
+Mise en place de tests fonctionnels
+
+Ce projet permet également de simuler un contexte professionnel réel, en respectant des contraintes techniques et organisationnelles.
+
+2.1 Description générale du TPI
+
+Le projet Druid’s Adventure a été choisi afin de mettre en pratique mes compétences en développement C# dans un contexte concret.
+
+L’objectif est de produire un jeu complet dans un temps limité, tout en respectant les exigences du TPI, notamment :
+
+Développement d’un jeu 2D platformer conforme au cahier des charges
+Application des bonnes pratiques de programmation (structure, lisibilité, maintenabilité)
+Réalisation d’une documentation technique complète couvrant l’ensemble du projet
+
+Ce projet permet de répondre aux attentes du TPI en combinant aspects techniques, organisationnels et analytiques, comme recommandé dans le document officiel .
+
+2.2 Objectifs et description de l’application
+
+L’objectif de l’application est de proposer une expérience de jeu basée sur l’exploration et l’adaptation aux environnements grâce aux transformations du druide.
+
+Le joueur peut :
+
+Se transformer en plusieurs formes : ours, poisson, oiseau
+Utiliser des capacités spécifiques :
+Druide → interaction
+Ours → attaque
+Oiseau → vol
+Poisson → nage
+Explorer différents niveaux
+Gérer une ressource limitée (mana)
+Interagir avec des objets et des ennemis
+
+L’application inclut également :
+
+Une interface utilisateur avec plusieurs écrans
+Une progression basée sur les niveaux
+Une gestion persistante des données (mana, vie)
+
+Ce projet contribue à valider mes compétences en développement logiciel en mettant en œuvre une application complète et interactive.
 
 
