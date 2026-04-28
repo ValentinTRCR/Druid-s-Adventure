@@ -1,5 +1,6 @@
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class FinirLeNiveau : MonoBehaviour
 {
@@ -7,7 +8,7 @@ public class FinirLeNiveau : MonoBehaviour
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-
+        
     }
 
     // Update is called once per frame
@@ -34,7 +35,7 @@ public class FinirLeNiveau : MonoBehaviour
 
             if (crystal != null)
             {
-                Debug.Log("Crystal trouvé !");
+                SceneManager.LoadScene("NiveauDeux");
             }else
             {
                 Debug.Log("Crystal non trouvé !");

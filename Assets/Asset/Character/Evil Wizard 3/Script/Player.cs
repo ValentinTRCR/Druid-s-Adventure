@@ -79,11 +79,15 @@ public class Player : Entity
         if(value.isPressed)
         {
             GameObject objectToCollect = detectionInteraction.ObjectToCollect;
-            if(objectToCollect != null)
+            if(objectToCollect != null && objectToCollect.name == "crystal")
             {
                 objectToCollect.transform.SetParent(Druide.transform);
                 objectToCollect.GetComponentInChildren<SpriteRenderer>().enabled = false;
                 objectToCollect.GetComponent<Collider2D>().enabled = false;
+            }
+            else if(objectToCollect.name == "Levier" && objectToCollect.CompareTag("Interact"))
+            {
+                objectToCollect.GetComponent<Levier>().isActivated = true;
             }
         }
     }

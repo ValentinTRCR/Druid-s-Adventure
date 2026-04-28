@@ -33,7 +33,7 @@ public class Entity : MonoBehaviour
     private void Dead()
     {
        
-        if (HaveDeadAnimation)
+        if (!HaveDeadAnimation)
         {
            Invoke("LancerAnimation", 0.5f);
         }

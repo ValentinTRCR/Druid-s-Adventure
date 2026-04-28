@@ -57,6 +57,19 @@ Le projet doit contenir ces fonctionnalitées
 
 L'application sera développée en C# avec le moteur graphique unity en version 6.* 
 
+1.2 Objectif du tpi
+
+Le principal objectif de ce projet est de tester mes capacité en c# ainsi qu'en gestion de projet. Pour atteindre cette objectif je dois produire un jeux 2D avec des mécanique prédéfinis dans mon cahier des charges comme par exemple:
+- transformation de mon personnage 
+- adaption de la physique du personnage selon son environnement et sa transformation
+- gestion de ressource 
+- UI/UX
+En complément ce projet me permet de m'améliorer avec: 
+- le moteur de jeu unity
+- la gestion de projet 
+- les testes fonctionnels
+
+1.3 En Annexe
 
 
 
