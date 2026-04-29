@@ -84,10 +84,24 @@ public class Player : Entity
                 objectToCollect.transform.SetParent(Druide.transform);
                 objectToCollect.GetComponentInChildren<SpriteRenderer>().enabled = false;
                 objectToCollect.GetComponent<Collider2D>().enabled = false;
+                objectToCollect.transform.Find("Spot Light 2D").gameObject.SetActive(false);
             }
             else if(objectToCollect.name == "Levier" && objectToCollect.CompareTag("Interact"))
             {
                 objectToCollect.GetComponent<Levier>().isActivated = true;
+            }else if(objectToCollect.name =="depotCrystal" && objectToCollect.CompareTag("Interact"))
+            {
+                Transform crystal = Druide.transform.Find("crystal");
+                if(crystal != null)
+                {
+                    crystal.SetParent(objectToCollect.transform);
+                }else
+                {
+                    Debug.Log("No crystal to deposit");
+                }
+                
+                
+
             }
         }
     }

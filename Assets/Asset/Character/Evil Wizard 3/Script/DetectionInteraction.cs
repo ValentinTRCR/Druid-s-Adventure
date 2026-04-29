@@ -14,7 +14,7 @@ public class DetectionInteraction : MonoBehaviour
     {
         if(collision.gameObject.tag == "Interact")
         {
-            Debug.Log("Object detected");
+            Debug.Log("Object " + collision.gameObject.name + " detected");
             ObjectToCollect = collision.gameObject;
         }
     }

@@ -5,6 +5,9 @@ using UnityEngine.SceneManagement;
 public class FinirLeNiveau : MonoBehaviour
 {
     Transform crystal;
+    public bool canBeTake = false;
+
+    public string NomSceneProchaineNiveau;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
@@ -35,10 +38,16 @@ public class FinirLeNiveau : MonoBehaviour
 
             if (crystal != null)
             {
-                SceneManager.LoadScene("NiveauDeux");
+                
+                canBeTake = true;
             }else
             {
                 Debug.Log("Crystal non trouvé !");
+            }
+
+            if (canBeTake)
+            {
+                SceneManager.LoadScene(NomSceneProchaineNiveau);
             }
         }
     }

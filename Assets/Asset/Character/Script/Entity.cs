@@ -3,8 +3,10 @@ using UnityEngine;
 
 public class Entity : MonoBehaviour
 {
-    public int maxHealth = 100;
-    private int currentHealth;
+    private GestionPersonnage gp;
+    public int currentHealth;
+
+    public int currentMana;
 
     public float movex;
     public bool Hurt;
@@ -16,14 +18,17 @@ public class Entity : MonoBehaviour
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     public void Start()
     {
-        currentHealth = maxHealth;
+        currentHealth = gp.MaxHealth;
+        currentMana = gp.MaxMana;
         IsDead = false;
+        gp = GetComponent<GestionPersonnage>();
     }
 
     public void TakeDamage(int damage)
     {
         currentHealth -= damage;
         Hurt = true;
+        gp.MettreAjourVieEtMana(currentHealth,currentMana);
         if (currentHealth <= 0)
         {
             Dead();

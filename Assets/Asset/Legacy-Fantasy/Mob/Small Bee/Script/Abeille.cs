@@ -7,6 +7,7 @@ public class Abeille : Entity
         FlyUp,
         Dive,
         Stunt,
+        InWater,
     }
     enum FlyPhase
     {
@@ -64,7 +65,7 @@ public class Abeille : Entity
     float distanceMinEntreAbeilleEtPlayer = 4.5f;
     //Calcul Distance X    
 
-    bool IsAttacking = false;
+    public bool IsAttacking = false;
 
     float flyUpTimer = 0f;
     float maxFlyUpTime = 3.5f;
@@ -74,6 +75,9 @@ public class Abeille : Entity
     Entity entity;
 
     Vector2 directionBee;
+
+    public GameObject LimitePatrouilleDroite;
+    public GameObject LimitePatrouilleGauche;
 
 
 
@@ -104,6 +108,11 @@ public class Abeille : Entity
         else
         {
             flip();
+            if(IsInWater)
+            {
+                currentState = State.InWater;
+            }
+            //Si pas de joueur détecter et qu'il n'est pas entrain d'attaquer
             if (detecterEnnemiSol.player != null && !IsAttacking)
             {
                 player = detecterEnnemiSol.player;
@@ -114,6 +123,7 @@ public class Abeille : Entity
                 case State.Patrouille:
                     // Logique de patrouille
                     Patrouille();
+                    //ResetAttack();
                     break;
                 case State.FlyUp:
                     FlyUp();
@@ -127,9 +137,25 @@ public class Abeille : Entity
                     Stunt();
                     // Logique de stun
                     break;
+                case State.InWater:
+                    InWater();
+                    // Logique de stun
+                    break;
             }
         }
 
+    }
+
+    void InWater()
+    {
+        rb.gravityScale = 2f;
+        rb.linearVelocity = new Vector2(0, 0);
+        Invoke("PrendreDesDegats",2f);
+    }
+
+    void PrendreDesDegats()
+    {
+        TakeDamage(1);
     }
     void flip()
     {
@@ -147,36 +173,26 @@ public class Abeille : Entity
     {
         speed = patrolSpeed;
         rb.linearVelocity = new Vector2(direction * speed, rb.linearVelocity.y);
-        if (detecterObstacleDroit.isObstacleDetected)
+
+        if(transform.position.x > LimitePatrouilleDroite.transform.position.x ||detecterObstacleDroit.isObstacleDetected)
         {
             direction = -1;
         }
-        else if (detecterObstacleGauche.isObstacleDetected)
+        else if(transform.position.x < LimitePatrouilleGauche.transform.position.x || detecterObstacleGauche.isObstacleDetected)
         {
             direction = 1;
         }
 
-        if (detecterEnnemiSol.sol != null)
+        if(transform.position.y < LimitePatrouilleGauche.transform.position.y - 0.4f)
         {
-            distanceActuelleEntreAbeilleEtSol = Mathf.Abs(transform.position.y - detecterEnnemiSol.sol.transform.position.y);
+             rb.linearVelocity = new Vector2(rb.linearVelocity.x, speed);
         }
-        else
-        {
-            distanceActuelleEntreAbeilleEtSol = float.MaxValue;
-        }
-
-        if (distanceActuelleEntreAbeilleEtSol < distanceMinEntreAbeilleEtSol)
-        {
-            rb.linearVelocity = new Vector2(rb.linearVelocity.x, speed);
-        }
-        else if (distanceActuelleEntreAbeilleEtSol > distanceMaxEntreAbeilleEtSol)
+        if(transform.position.y > LimitePatrouilleDroite.transform.position.y + 0.4f)
         {
             rb.linearVelocity = new Vector2(rb.linearVelocity.x, -speed);
         }
-        else
-        {
-            rb.linearVelocity = new Vector2(rb.linearVelocity.x, 0);
-        }
+
+       
     }
 
     //contient du code générer par l'ia
@@ -274,9 +290,11 @@ public class Abeille : Entity
 
     void Dive()
     {
+        
         if (targetPlayerPosition == null)
         {
             targetPlayerPosition = player.transform;
+            
             directionBee = (targetPlayerPosition.position - transform.position).normalized;
             
             return;
@@ -344,6 +362,7 @@ public class Abeille : Entity
         if(currentState == State.Dive)
         {
             currentState = State.Patrouille;
+            Invoke("ResetAttack",1f);
             stunTimer = 0f;
         }
 
@@ -360,5 +379,10 @@ public class Abeille : Entity
             IsAttacking = false; 
             targetPlayerPosition = null; 
         }
+    }
+
+    void ResetAttack()
+    {
+        IsAttacking = false;
     }
 }

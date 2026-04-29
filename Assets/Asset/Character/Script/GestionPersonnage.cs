@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using NUnit.Framework.Interfaces;
+using Unity.Collections.LowLevel.Unsafe;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -12,6 +13,10 @@ public class GestionPersonnage : MonoBehaviour
         Fish,
         Bird
     }
+    public int MaxHealth = 100;
+    private int currentHealth;
+    public int MaxMana = 100;
+    private int currentMana;
 
     public TypePersonnage currentPersonnage;
 
@@ -34,6 +39,8 @@ public class GestionPersonnage : MonoBehaviour
 
     private Bird bird;
 
+    private Fish fish;
+
     Vector2 positionActuelle;
 
     Animator animVfx;
@@ -48,6 +55,7 @@ public class GestionPersonnage : MonoBehaviour
         bear = GetComponent<Bear>();
         Druide = GetComponent<Player>();
         bird = GetComponent<Bird>();
+        fish = GetComponent<Fish>();
         animVfx = Vfx.GetComponentInChildren<Animator>();
         Vfx.SetActive(false);
         
@@ -62,10 +70,16 @@ public class GestionPersonnage : MonoBehaviour
             case TypePersonnage.Druide:
                 //récupérer position actuelle
                 positionActuelle = DruideGo.transform.position;
+                //StatDeVie
+
+                Druide.currentHealth = currentHealth;
+
+                Druide.currentMana = currentMana;
                 //script
                 Druide.enabled = true;
                 bear.enabled = false;
                 bird.enabled = false;
+                fish.enabled = false;
                 //gameObject
                 DruideGo.SetActive(true);
                 BearGo.SetActive(false);
@@ -76,10 +90,16 @@ public class GestionPersonnage : MonoBehaviour
             case TypePersonnage.Bears:
                 //récupérer position actuelle
                 positionActuelle = BearGo.transform.position;
+                //StatDeVie
+
+                bear.currentHealth = currentHealth;
+
+                bear.currentMana = currentMana;
                 //script
                 Druide.enabled = false;
                 bear.enabled = true;
                 bird.enabled = false;
+                fish.enabled = false;
                 //gameObject
                 
                 BearGo.SetActive(true);
@@ -93,10 +113,14 @@ public class GestionPersonnage : MonoBehaviour
             case TypePersonnage.Fish:
                 //récupérer position actuelle
                 positionActuelle = FishGo.transform.position;
+                //Stat de vie et de mana
+                fish.currentHealth = currentHealth;
+                fish.currentMana = currentMana;
                 // script
                 Druide.enabled = false;
                 bear.enabled = false;
                 bird.enabled = false;
+                fish.enabled = true;
                 // GameObject
                 FishGo.SetActive(true);
                 BearGo.SetActive(false);
@@ -107,10 +131,16 @@ public class GestionPersonnage : MonoBehaviour
             case TypePersonnage.Bird:
                 //récupérer position actuelle
                 positionActuelle = BirdGo.transform.position;
+                //Stat de vie et de mana
+
+                bird.currentHealth = currentHealth;
+
+                bird.currentMana = currentMana;
                 //script
                 bird.enabled = true;
                 Druide.enabled = false;
                 bear.enabled = false;
+                fish.enabled = false;
                 //GameObject
                 BirdGo.SetActive(true);
                 FishGo.SetActive(false);
@@ -118,6 +148,23 @@ public class GestionPersonnage : MonoBehaviour
                 DruideGo.SetActive(false);
                 // Handle Bird specific logic
                 break;
+        }
+    }
+
+    public void MettreAjourVieEtMana(int health,int mana)
+    {
+        currentHealth = health;
+        currentMana = mana;
+
+        if(currentHealth > MaxHealth)
+        {
+            int difference = currentHealth - MaxHealth;
+            MaxHealth += difference;
+        }
+        if(currentMana > MaxMana)
+        {
+            int difference = currentMana - MaxMana;
+            MaxMana += difference;
         }
     }
 

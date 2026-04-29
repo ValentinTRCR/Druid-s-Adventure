@@ -3,7 +3,7 @@ using UnityEngine.InputSystem;
 
 public class Water : MonoBehaviour
 {
-    GameObject player;
+    GameObject Entity;
 
     GestionPersonnage gp;
 
@@ -46,35 +46,65 @@ public class Water : MonoBehaviour
     void OnTriggerEnter2D(Collider2D collision)
     {
         Debug.Log("OnTriggerStay2D" + collision.gameObject.name);
-        player = collision.gameObject;
-        if(player.name == "Ours")
+        Entity = collision.gameObject;
+        if(Entity.name == "Ours")
         {
-            bearCs = player.GetComponentInParent<Bear>();
+            bearCs = Entity.GetComponentInParent<Bear>();
             entite = bearCs;
             entite.IsInWater = true;
         }
-        if(player.name == "Druide")
+        if(Entity.name == "Druide")
         {
-            DruideCs = player.GetComponentInParent<Player>();
+            DruideCs = Entity.GetComponentInParent<Player>();
             entite = DruideCs;
             entite.IsInWater = true;
         }
-        if(player.name == "Poisson")
+        if(Entity.name == "Poisson")
         {
-            fishCs = player.GetComponentInParent<Fish>();
+            fishCs = Entity.GetComponentInParent<Fish>();
             entite = fishCs;
             entite.IsInWater = true;
         }
-        if(player.name == "Oiseau")
+        if(Entity.name == "Oiseau")
         {
-            birdCs = player.GetComponentInParent<Bird>();
+            birdCs = Entity.GetComponentInParent<Bird>();
             entite = birdCs;
             entite.IsInWater = true;
         }
+        if(Entity.name == "Abeille")
+        {
+            entite = Entity.GetComponent<Entity>();
+            entite.IsInWater = true;
+        }
+    }
 
-
-        
-
+    void OnTriggerStay2D(Collider2D collision)
+    {
+        Entity = collision.gameObject;
+        if(Entity.name == "Ours")
+        {
+            bearCs = Entity.GetComponentInParent<Bear>();
+            entite = bearCs;
+            entite.IsInWater = true;
+        }
+        if(Entity.name == "Druide")
+        {
+            DruideCs = Entity.GetComponentInParent<Player>();
+            entite = DruideCs;
+            entite.IsInWater = true;
+        }
+        if(Entity.name == "Poisson")
+        {
+            fishCs = Entity.GetComponentInParent<Fish>();
+            entite = fishCs;
+            entite.IsInWater = true;
+        }
+        if(Entity.name == "Oiseau")
+        {
+            birdCs = Entity.GetComponentInParent<Bird>();
+            entite = birdCs;
+            entite.IsInWater = true;
+        }
     }
 
     void OnTriggerExit2D(Collider2D collision)
@@ -83,7 +113,7 @@ public class Water : MonoBehaviour
         if (entite != null)
         {
             entite.IsInWater = false;
-            player = null;
+            Entity = null;
             entite = null;
         }
     }

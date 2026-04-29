@@ -125,4 +125,14 @@ Une gestion persistante des données (mana, vie)
 
 Ce projet contribue à valider mes compétences en développement logiciel en mettant en œuvre une application complète et interactive.
 
+2.3 Organisation du suivi 
+
+Le suivi du projet à été organiser de manière a priorisé les tâches importantes ainsi que finir le projet dans les délais imparti.Pour que cela soit fait correctement,voici les points qui ont été mis en place.
+
+- Plannification prévissionnelle pour prévoir le temp que les tâches vont me prendre et celle que je dois priorisé
+- Planification actuel pour voir ou j'en suis.
+- Test de mes fonctionnalité afin de voir si ma tâche est validé avant de passer à la suivante
+
+Cette organisation ma permis d'optimiser le temp de dévelloppement et pouvoir prévoir plus de temp si j'ai des potentiels erreurs. 
+
 

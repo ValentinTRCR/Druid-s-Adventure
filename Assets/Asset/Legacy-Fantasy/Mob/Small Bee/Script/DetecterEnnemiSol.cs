@@ -17,20 +17,11 @@ public class DetecterEnnemiSol : MonoBehaviour
             player = collision.gameObject;
             playerIn = true;
         }
-         if (collision.gameObject.CompareTag("Sol"))
-        {
-            sol = collision.gameObject;
-            GroundIn = true;
-        }
+        
     }
 
     void OnTriggerStay2D(Collider2D collision)
     {
-         if (collision.gameObject.CompareTag("Sol"))
-        {
-            sol = collision.gameObject;
-            GroundIn = true;
-        }
         if (collision.gameObject.CompareTag("Player"))
         {
             player = collision.gameObject;
@@ -45,11 +36,6 @@ public class DetecterEnnemiSol : MonoBehaviour
         {
             player = null;
             playerIn = false;
-        }
-        if (collision.gameObject.CompareTag("Sol"))
-        {
-            sol = null;
-            GroundIn = false;
         }
     }
 }

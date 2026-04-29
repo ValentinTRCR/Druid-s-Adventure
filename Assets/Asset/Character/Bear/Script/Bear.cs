@@ -32,7 +32,6 @@ public class Bear : Entity
         detectionSolDroite = bear.GetComponentInChildren<DetectionSolDroite>();
         detectionSolGauche = bear.GetComponentInChildren<DetectionSolGauche>();
         canAttack = bear.GetComponent<CanAttack>();
-        maxHealth = 1;
     }
 
     void FixedUpdate()
