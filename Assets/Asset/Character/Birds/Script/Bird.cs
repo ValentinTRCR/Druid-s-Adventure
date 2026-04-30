@@ -33,8 +33,10 @@ public class Bird : Entity
     {
         if (IsInWater)
         {
+           
             rb.gravityScale = 1f;
             rb.linearVelocity = new Vector2(0, 0);
+            DamageInTheWater();
         }
         else
         {

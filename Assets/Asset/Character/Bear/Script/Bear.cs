@@ -55,6 +55,7 @@ public class Bear : Entity
         {
             rb.gravityScale = 2f;
             rb.linearVelocity = new Vector2(0, 0);
+            DamageInTheWater();
         }
         else
         {

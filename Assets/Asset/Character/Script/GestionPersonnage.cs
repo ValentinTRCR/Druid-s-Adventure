@@ -1,6 +1,4 @@
-using System.Collections.Generic;
-using NUnit.Framework.Interfaces;
-using Unity.Collections.LowLevel.Unsafe;
+using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -45,26 +43,45 @@ public class GestionPersonnage : MonoBehaviour
 
     Animator animVfx;
 
+    //timer
+    float timer = 0f;
+    float timerMax = 1f;
+
+    public GameObject vie;
+    public GameObject mana;    
+
+
 
 
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        currentPersonnage = TypePersonnage.Bird;
+        currentPersonnage = TypePersonnage.Druide;
         bear = GetComponent<Bear>();
         Druide = GetComponent<Player>();
         bird = GetComponent<Bird>();
         fish = GetComponent<Fish>();
         animVfx = Vfx.GetComponentInChildren<Animator>();
+        currentHealth = PlayerStatManager.Instance.health;
+        currentMana = PlayerStatManager.Instance.mana;
+        MaxHealth = PlayerStatManager.Instance.maxHealth;
+        MaxMana = PlayerStatManager.Instance.maxMana;
         Vfx.SetActive(false);
-        
-        
     }
 
     // Update is called once per frame
     void Update()
     {
+        if(currentMana <= 0)
+        {
+            currentPersonnage = TypePersonnage.Druide;
+            currentMana += 1;
+            DruideGo.transform.position = new Vector2(positionActuelle.x, positionActuelle.y);
+
+            Vfx.SetActive(true);
+            Vfx.transform.position = new Vector2(VfxPositionDruide.transform.position.x, VfxPositionDruide.transform.position.y);
+        }
         switch (currentPersonnage)
         {
             case TypePersonnage.Druide:
@@ -74,7 +91,6 @@ public class GestionPersonnage : MonoBehaviour
 
                 Druide.currentHealth = currentHealth;
 
-                Druide.currentMana = currentMana;
                 //script
                 Druide.enabled = true;
                 bear.enabled = false;
@@ -94,14 +110,13 @@ public class GestionPersonnage : MonoBehaviour
 
                 bear.currentHealth = currentHealth;
 
-                bear.currentMana = currentMana;
                 //script
                 Druide.enabled = false;
                 bear.enabled = true;
                 bird.enabled = false;
                 fish.enabled = false;
                 //gameObject
-                
+
                 BearGo.SetActive(true);
                 DruideGo.SetActive(false);
                 FishGo.SetActive(false);
@@ -115,7 +130,6 @@ public class GestionPersonnage : MonoBehaviour
                 positionActuelle = FishGo.transform.position;
                 //Stat de vie et de mana
                 fish.currentHealth = currentHealth;
-                fish.currentMana = currentMana;
                 // script
                 Druide.enabled = false;
                 bear.enabled = false;
@@ -135,7 +149,6 @@ public class GestionPersonnage : MonoBehaviour
 
                 bird.currentHealth = currentHealth;
 
-                bird.currentMana = currentMana;
                 //script
                 bird.enabled = true;
                 Druide.enabled = false;
@@ -149,32 +162,61 @@ public class GestionPersonnage : MonoBehaviour
                 // Handle Bird specific logic
                 break;
         }
+        timer += Time.deltaTime;
+        if (timer >= timerMax)
+        {
+            //Debug.Log("une seconde");
+            if (currentPersonnage == TypePersonnage.Bears)
+            {
+                currentMana  -= 6;
+            }
+            else if (currentPersonnage == TypePersonnage.Fish)
+            {
+                currentMana -= 8;
+            }
+            else if (currentPersonnage == TypePersonnage.Bird)
+            {
+                currentMana -= 8;
+            }else if(currentPersonnage == TypePersonnage.Druide && currentMana != MaxMana)
+            {
+                currentMana += 1;
+            }
+            timer = 0;
+        }
+        afficherVieEtMana();
+        PlayerStatManager.Instance.SaveStats(currentHealth,currentMana,MaxHealth,MaxMana);
     }
 
-    public void MettreAjourVieEtMana(int health,int mana)
+    // sers à mettre a jour depuis la classe entity
+    public void MettreAjourVieEtMana(int health)
     {
         currentHealth = health;
-        currentMana = mana;
 
-        if(currentHealth > MaxHealth)
+        if (currentHealth > MaxHealth)
         {
             int difference = currentHealth - MaxHealth;
             MaxHealth += difference;
         }
-        if(currentMana > MaxMana)
+        if (currentMana > MaxMana)
         {
             int difference = currentMana - MaxMana;
             MaxMana += difference;
         }
     }
 
+    public void ManaRecuperer()
+    {
+        currentMana += 20;
+    }
+
     void OnChangeDruide(InputValue inputValue)
     {
         if (inputValue.isPressed && TypePersonnage.Druide != currentPersonnage)
         {
+
             currentPersonnage = TypePersonnage.Druide;
-            DruideGo.transform.position = new Vector2(positionActuelle.x,positionActuelle.y);
-            
+            DruideGo.transform.position = new Vector2(positionActuelle.x, positionActuelle.y);
+
             Vfx.SetActive(true);
             Vfx.transform.position = new Vector2(VfxPositionDruide.transform.position.x, VfxPositionDruide.transform.position.y);
         }
@@ -182,11 +224,11 @@ public class GestionPersonnage : MonoBehaviour
 
     void OnChangeBear(InputValue inputValue)
     {
-         if (inputValue.isPressed && TypePersonnage.Bears != currentPersonnage)
+        if (inputValue.isPressed && TypePersonnage.Bears != currentPersonnage && currentMana >= 6)
         {
             currentPersonnage = TypePersonnage.Bears;
-            BearGo.transform.position =  new Vector2(positionActuelle.x,positionActuelle.y);
-            
+            BearGo.transform.position = new Vector2(positionActuelle.x, positionActuelle.y);
+
             Vfx.SetActive(true);
             Vfx.transform.position = VfxPositionBear.transform.position;
         }
@@ -194,11 +236,11 @@ public class GestionPersonnage : MonoBehaviour
 
     void OnChangeFish(InputValue inputValue)
     {
-         if (inputValue.isPressed && TypePersonnage.Fish != currentPersonnage)
+        if (inputValue.isPressed && TypePersonnage.Fish != currentPersonnage && currentMana >= 5)
         {
             currentPersonnage = TypePersonnage.Fish;
-            FishGo.transform.position =  new Vector2(positionActuelle.x,positionActuelle.y);
-            
+            FishGo.transform.position = new Vector2(positionActuelle.x, positionActuelle.y);
+
             Vfx.SetActive(true);
             Vfx.transform.position = VfxPositionFish.transform.position;
         }
@@ -206,11 +248,11 @@ public class GestionPersonnage : MonoBehaviour
 
     void OnChangeBird(InputValue inputValue)
     {
-         if (inputValue.isPressed && TypePersonnage.Bird != currentPersonnage)
+        if (inputValue.isPressed && TypePersonnage.Bird != currentPersonnage && currentMana >= 8)
         {
             currentPersonnage = TypePersonnage.Bird;
-            BirdGo.transform.position =  new Vector2(positionActuelle.x,positionActuelle.y);
-           
+            BirdGo.transform.position = new Vector2(positionActuelle.x, positionActuelle.y);
+
             Vfx.SetActive(true);
             Vfx.transform.position = VfxPositionBird.transform.position;
         }
@@ -219,5 +261,12 @@ public class GestionPersonnage : MonoBehaviour
     public void VfxTerminer()
     {
         Vfx.SetActive(false);
+    }
+
+    //il sert à afficher la vie pout l'ui
+    void afficherVieEtMana()
+    {
+        vie.GetComponent<TextMeshProUGUI>().text = currentHealth + " / " + MaxHealth;
+        mana.GetComponent<TextMeshProUGUI>().text = currentMana + " / " + MaxMana;
     }
 }

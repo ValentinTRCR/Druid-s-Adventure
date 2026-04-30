@@ -85,7 +85,7 @@ public class Abeille : Entity
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        base.Start();
+        IsDead = false;
         rb = GetComponent<Rigidbody2D>();
         anim = GetComponentInChildren<Animator>();
         sr = GetComponentInChildren<SpriteRenderer>();

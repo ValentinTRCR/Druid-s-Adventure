@@ -12,7 +12,6 @@ public class Brick : Entity
     private Transform[] bricksSpritesTransforms;
     void Start()
     {
-        base.Start();
         bricksSpritesTransforms = gameObject.GetComponentsInChildren<Transform>();
         bricksSprites = new List<GameObject>();
         foreach (var item in bricksSpritesTransforms)

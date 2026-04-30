@@ -8,7 +8,7 @@ public class Player : Entity
     DetectionSol detectionSol;
     private float speed = 5f;
     private float jumpForce = 6f;
-
+    
     bool jump = true;
 
     private float movey;
@@ -28,6 +28,8 @@ public class Player : Entity
 
     DetectionInteraction detectionInteraction;
 
+    public GameObject prefabCrystal;
+
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -38,6 +40,12 @@ public class Player : Entity
         offsetxRight = capsuleCollider2D.offset.x;
         anim = Druide.GetComponentInChildren<Animator>();
         detectionInteraction = Druide.GetComponentInChildren<DetectionInteraction>();
+        if(PlayerStatManager.Instance.HasCrystal)
+        {
+            GameObject instanceCrystal = Instantiate(prefabCrystal);
+            DeplacerCrystal(instanceCrystal);
+            instanceCrystal.name = "crystal";
+        }
         base.Start();
     }
 
@@ -49,6 +57,7 @@ public class Player : Entity
         {
             rb.gravityScale = 2f;
             rb.linearVelocity = new Vector2(0, 0);
+            DamageInTheWater();
         }
         else
         {
@@ -81,10 +90,8 @@ public class Player : Entity
             GameObject objectToCollect = detectionInteraction.ObjectToCollect;
             if(objectToCollect != null && objectToCollect.name == "crystal")
             {
-                objectToCollect.transform.SetParent(Druide.transform);
-                objectToCollect.GetComponentInChildren<SpriteRenderer>().enabled = false;
-                objectToCollect.GetComponent<Collider2D>().enabled = false;
-                objectToCollect.transform.Find("Spot Light 2D").gameObject.SetActive(false);
+                DeplacerCrystal(objectToCollect);
+                PlayerStatManager.Instance.HasCrystal = true;
             }
             else if(objectToCollect.name == "Levier" && objectToCollect.CompareTag("Interact"))
             {
@@ -94,16 +101,22 @@ public class Player : Entity
                 Transform crystal = Druide.transform.Find("crystal");
                 if(crystal != null)
                 {
+                    PlayerStatManager.Instance.HasCrystal = false;
                     crystal.SetParent(objectToCollect.transform);
                 }else
                 {
                     Debug.Log("No crystal to deposit");
                 }
-                
-                
-
             }
         }
+    }
+
+    void DeplacerCrystal(GameObject objectToCollect)
+    {
+        objectToCollect.transform.SetParent(Druide.transform);
+        objectToCollect.GetComponentInChildren<SpriteRenderer>().enabled = false;
+        objectToCollect.GetComponent<Collider2D>().enabled = false;
+        objectToCollect.transform.Find("Spot Light 2D").gameObject.SetActive(false);
     }
 
     public void gererAnimation()
