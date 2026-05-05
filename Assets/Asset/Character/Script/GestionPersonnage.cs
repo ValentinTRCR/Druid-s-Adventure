@@ -177,7 +177,7 @@ public class GestionPersonnage : MonoBehaviour
             else if (currentPersonnage == TypePersonnage.Bird)
             {
                 currentMana -= 8;
-            }else if(currentPersonnage == TypePersonnage.Druide && currentMana != MaxMana)
+            }else if(currentPersonnage == TypePersonnage.Druide && currentMana < MaxMana)
             {
                 currentMana += 1;
             }
@@ -191,22 +191,25 @@ public class GestionPersonnage : MonoBehaviour
     public void MettreAjourVieEtMana(int health)
     {
         currentHealth = health;
+    }
 
-        if (currentHealth > MaxHealth)
-        {
-            int difference = currentHealth - MaxHealth;
-            MaxHealth += difference;
-        }
+    public void ManaRecuperer()
+    {
+        currentMana += 20;
         if (currentMana > MaxMana)
         {
             int difference = currentMana - MaxMana;
             MaxMana += difference;
         }
     }
-
-    public void ManaRecuperer()
+    public void VieRecuperer()
     {
-        currentMana += 20;
+        currentHealth += 20;
+        if (currentHealth > MaxHealth)
+        {
+            int difference = currentHealth - MaxHealth;
+            MaxHealth += difference;
+        }
     }
 
     void OnChangeDruide(InputValue inputValue)
@@ -268,5 +271,15 @@ public class GestionPersonnage : MonoBehaviour
     {
         vie.GetComponent<TextMeshProUGUI>().text = currentHealth + " / " + MaxHealth;
         mana.GetComponent<TextMeshProUGUI>().text = currentMana + " / " + MaxMana;
+    }
+
+    public int RetournerVie()
+    {
+        return currentHealth;
+    }
+
+    public int RetournerMana()
+    {
+        return currentMana;
     }
 }
