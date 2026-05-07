@@ -3,107 +3,235 @@ using UnityEngine.InputSystem;
 
 public class Player : Entity
 {
+    /// <summary>
+    /// GameObject principal du druide contrôlé par le joueur.
+    /// </summary>
     public GameObject Druide;
-    Rigidbody2D rb;
-    DetectionSol detectionSol;
-    private float speed = 5f;
-    private float jumpForce = 6f;
-    
-    bool jump = true;
 
-    private float movey;
+    /// <summary>
+    /// Rigidbody2D utilisé pour gérer les déplacements et la physique.
+    /// </summary>
+    Rigidbody2D _rb;
 
+    /// <summary>
+    /// Script permettant de détecter si le joueur touche le sol.
+    /// </summary>
+    DetectionSol _detectionSol;
 
+    /// <summary>
+    /// Vitesse de déplacement horizontale du joueur.
+    /// </summary>
+    float _speed = 5f;
 
-    bool isJumping;
-    bool isFalling;
-    bool isWalking;
+    /// <summary>
+    /// Force appliquée lors du saut.
+    /// </summary>
+    float _jumpForce = 6f;
 
-    CapsuleCollider2D capsuleCollider2D;
+    /// <summary>
+    /// Vérifie si le joueur a sauté.
+    /// </summary>
+    bool _jump = true;
 
-    float offsetxRight;
-    float offsetxLeft = 0.06f;
+    /// <summary>
+    /// Valeur du déplacement vertical récupérée via l’Input System.
+    /// </summary>
+    private float _movey;
 
-    Animator anim;
+    /// <summary>
+    /// Vérifie si le joueur est en train de sauter.
+    /// </summary>
+    bool _isJumping;
 
-    DetectionInteraction detectionInteraction;
+    /// <summary>
+    /// Vérifie si le joueur est en train de tomber.
+    /// </summary>
+    bool _isFalling;
 
+    /// <summary>
+    /// Vérifie si le joueur est en train de marcher.
+    /// </summary>
+    bool _isWalking;
+
+    /// <summary>
+    /// Collider principal du joueur.
+    /// </summary>
+    CapsuleCollider2D _capsuleCollider2D;
+
+    /// <summary>
+    /// Offset du collider lorsque le joueur regarde à droite.
+    /// </summary>
+    float _offsetxRight;
+
+    /// <summary>
+    /// Offset du collider lorsque le joueur regarde à gauche.
+    /// </summary>
+    float _offsetxLeft = 0.06f;
+
+    /// <summary>
+    /// Animator utilisé pour gérer les animations du joueur.
+    /// </summary>
+    Animator _anim;
+
+    /// <summary>
+    /// Script permettant de détecter les objets interactifs proches du joueur.
+    /// </summary>
+    DetectionInteraction _detectionInteraction;
+
+    /// <summary>
+    /// Préfab du cristal récupérable.
+    /// </summary>
     public GameObject prefabCrystal;
 
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
+    /// <summary>
+    /// Initialisation des composants nécessaires au joueur.
+    /// </summary>
     void Start()
     {
-        rb = Druide.GetComponent<Rigidbody2D>();
-        detectionSol = Druide.GetComponentInChildren<DetectionSol>();
-        capsuleCollider2D = Druide.GetComponent<CapsuleCollider2D>();
-        offsetxRight = capsuleCollider2D.offset.x;
-        anim = Druide.GetComponentInChildren<Animator>();
-        detectionInteraction = Druide.GetComponentInChildren<DetectionInteraction>();
+        _rb = Druide.GetComponent<Rigidbody2D>();
+
+        _detectionSol = Druide.GetComponentInChildren<DetectionSol>();
+
+        _capsuleCollider2D = Druide.GetComponent<CapsuleCollider2D>();
+
+        // Sauvegarde de l’offset du collider
+        _offsetxRight = _capsuleCollider2D.offset.x;
+
+        _anim = Druide.GetComponentInChildren<Animator>();
+
+        _detectionInteraction =
+            Druide.GetComponentInChildren<DetectionInteraction>();
+
+        // Vérifie si le joueur possède déjà le cristal
         if(PlayerStatManager.Instance.HasCrystal)
         {
             GameObject instanceCrystal = Instantiate(prefabCrystal);
+
             DeplacerCrystal(instanceCrystal);
+
             instanceCrystal.name = "crystal";
         }
+
         base.Start();
     }
 
-    // Update is called once per frame
+    /// <summary>
+    /// Mise à jour appelée à chaque frame.
+    /// Gère les déplacements et les animations.
+    /// </summary>
     void Update()
     {
-
+        // Vérifie si le joueur est dans l’eau
         if (IsInWater)
         {
-            rb.gravityScale = 2f;
-            rb.linearVelocity = new Vector2(0, 0);
+            _rb.gravityScale = 2f;
+
+            // Stop le déplacement du joueur
+            _rb.linearVelocity = new Vector2(0, 0);
+
+            // Inflige des dégâts dans l’eau
             DamageInTheWater();
         }
         else
         {
-            rb.gravityScale = 1f;
-            rb.linearVelocity = new Vector2(movex * speed, rb.linearVelocity.y);
+            // Gravité normale
+            _rb.gravityScale = 1f;
+
+            // Déplacement horizontal du joueur
+            _rb.linearVelocity =
+                new Vector2(movex * _speed, _rb.linearVelocity.y);
         }
+
+        // Mise à jour des animations
         gererAnimation();
     }
 
+    /// <summary>
+    /// Fonction appelée automatiquement lors du déplacement du joueur.
+    /// </summary>
+    /// <param name="value">
+    /// Valeur envoyée par le système d’Input.
+    /// </param>
     void OnMove(InputValue value)
     {
         Vector2 d = value.Get<Vector2>();
+
         movex = d.x;
-        movey = d.y;
+        _movey = d.y;
     }
 
+    /// <summary>
+    /// Fonction appelée lorsque le joueur saute.
+    /// </summary>
+    /// <param name="value">
+    /// Valeur envoyée par le système d’Input.
+    /// </param>
     void OnJump(InputValue value)
     {
-        if (value.isPressed && detectionSol.ToucheLeSol)
+        // Vérifie si le joueur appuie sur la touche
+        // et qu’il touche le sol
+        if (value.isPressed && _detectionSol.ToucheLeSol)
         {
-            rb.AddForce(new Vector2(0, jumpForce), ForceMode2D.Impulse);
-            jump = true;
+            // Applique une impulsion vers le haut
+            _rb.AddForce(
+                new Vector2(0, _jumpForce),
+                ForceMode2D.Impulse
+            );
+
+            _jump = true;
         }
     }
 
+    /// <summary>
+    /// Fonction appelée lors d’une interaction avec un objet.
+    /// Permet de récupérer un cristal,
+    /// activer un levier ou déposer le cristal.
+    /// </summary>
+    /// <param name="value">
+    /// Valeur envoyée par le système d’Input.
+    /// </param>
     void OnInteract(InputValue value)
     {
         if(value.isPressed)
         {
-            GameObject objectToCollect = detectionInteraction.ObjectToCollect;
-            if(objectToCollect != null && objectToCollect.name == "crystal")
+            // Objet détecté par le joueur
+            GameObject objectToCollect =
+                _detectionInteraction.ObjectToCollect;
+
+            // Vérifie si l’objet est un cristal
+            if(objectToCollect != null &&
+               objectToCollect.name == "crystal")
             {
                 DeplacerCrystal(objectToCollect);
+
                 PlayerStatManager.Instance.HasCrystal = true;
             }
-            else if(objectToCollect.name == "Levier" && objectToCollect.CompareTag("Interact"))
+
+            // Vérifie si l’objet est un levier
+            else if(objectToCollect.name == "Levier" &&
+                    objectToCollect.CompareTag("Interact"))
             {
-                objectToCollect.GetComponent<Levier>().isActivated = true;
-            }else if(objectToCollect.name =="depotCrystal" && objectToCollect.CompareTag("Interact"))
+                objectToCollect
+                    .GetComponent<Levier>()
+                    .isActivated = true;
+            }
+
+            // Vérifie si le joueur dépose le cristal
+            else if(objectToCollect.name =="depotCrystal" &&
+                    objectToCollect.CompareTag("Interact"))
             {
-                Transform crystal = Druide.transform.Find("crystal");
+                Transform crystal =
+                    Druide.transform.Find("crystal");
+
                 if(crystal != null)
                 {
                     PlayerStatManager.Instance.HasCrystal = false;
+
+                    // Attache le cristal au dépôt
                     crystal.SetParent(objectToCollect.transform);
-                }else
+                }
+                else
                 {
                     Debug.Log("No crystal to deposit");
                 }
@@ -111,47 +239,92 @@ public class Player : Entity
         }
     }
 
+    /// <summary>
+    /// Déplace le cristal sur le joueur
+    /// et désactive ses composants visuels.
+    /// </summary>
+    /// <param name="objectToCollect">
+    /// Cristal à déplacer.
+    /// </param>
     void DeplacerCrystal(GameObject objectToCollect)
     {
+        // Attache le cristal au joueur
         objectToCollect.transform.SetParent(Druide.transform);
-        objectToCollect.GetComponentInChildren<SpriteRenderer>().enabled = false;
-        objectToCollect.GetComponent<Collider2D>().enabled = false;
-        objectToCollect.transform.Find("Spot Light 2D").gameObject.SetActive(false);
+
+        // Désactive le rendu du cristal
+        objectToCollect
+            .GetComponentInChildren<SpriteRenderer>()
+            .enabled = false;
+
+        // Désactive son collider
+        objectToCollect
+            .GetComponent<Collider2D>()
+            .enabled = false;
+
+        // Désactive la lumière du cristal
+        objectToCollect
+            .transform
+            .Find("Spot Light 2D")
+            .gameObject
+            .SetActive(false);
     }
 
+    /// <summary>
+    /// Gère les animations du joueur
+    /// selon ses déplacements et son état.
+    /// </summary>
     public void gererAnimation()
     {
+        // Vérifie si le joueur n’est pas blessé
         if (!Hurt)
         {
-
-
+            // Direction vers la droite
             if (movex > 0)
             {
                 GetComponentInChildren<SpriteRenderer>().flipX = false;
-                capsuleCollider2D.offset = new Vector2(offsetxRight, capsuleCollider2D.offset.y);
+
+                _capsuleCollider2D.offset =
+                    new Vector2(
+                        _offsetxRight,
+                        _capsuleCollider2D.offset.y
+                    );
             }
+
+            // Direction vers la gauche
             else if (movex < 0)
             {
                 GetComponentInChildren<SpriteRenderer>().flipX = true;
-                capsuleCollider2D.offset = new Vector2(offsetxLeft, capsuleCollider2D.offset.y);
 
+                _capsuleCollider2D.offset =
+                    new Vector2(
+                        _offsetxLeft,
+                        _capsuleCollider2D.offset.y
+                    );
             }
 
+            // Détection des états du joueur
+            _isJumping = _rb.linearVelocity.y > 0.1f;
 
-            isJumping = rb.linearVelocity.y > 0.1f;
-            isFalling = rb.linearVelocity.y < -0.1f;
-            isWalking = movex != 0;
+            _isFalling = _rb.linearVelocity.y < -0.1f;
 
-            anim.SetBool("IsJumping", isJumping);
+            _isWalking = movex != 0;
 
-            anim.SetBool("IsFalling", isFalling);
-            anim.SetBool("IsWalking", isWalking && !isJumping && !isFalling);
+            // Mise à jour des paramètres Animator
+            _anim.SetBool("IsJumping", _isJumping);
+
+            _anim.SetBool("IsFalling", _isFalling);
+
+            _anim.SetBool(
+                "IsWalking",
+                _isWalking && !_isJumping && !_isFalling
+            );
         }
         else
         {
-            anim.SetTrigger("Hurt");
+            // Déclenche l’animation de dégâts
+            _anim.SetTrigger("Hurt");
+
             Hurt = false;
         }
-
     }
 }

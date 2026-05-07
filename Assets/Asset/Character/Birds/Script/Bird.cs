@@ -3,97 +3,160 @@ using UnityEngine.InputSystem;
 
 public class Bird : Entity
 {
+    /// <summary>
+    /// GameObject principal de l’oiseau.
+    /// </summary>
     public GameObject bird;
 
-    private Rigidbody2D rb;
+    /// <summary>
+    /// Rigidbody2D utilisé pour gérer les déplacements et la physique.
+    /// </summary>
+    private Rigidbody2D _rb;
 
-    Animator anim;
-    float movey;
+    /// <summary>
+    /// Animator utilisé pour gérer les animations.
+    /// </summary>
+    Animator _anim;
 
+    /// <summary>
+    /// Valeur du déplacement vertical récupérée via l’Input System.
+    /// </summary>
+    float _movey;
+
+    /// <summary>
+    /// Vitesse de déplacement de l’oiseau.
+    /// </summary>
     public float speed = 3;
 
-    bool IsFlying;
+    /// <summary>
+    /// Vérifie si l’oiseau est en train de voler.
+    /// </summary>
+    bool _IsFlying;
 
-    DetectionSol detectionSol;
+    /// <summary>
+    /// Script permettant de détecter si l’oiseau touche le sol.
+    /// </summary>
+    DetectionSol _detectionSol;
 
-    SpriteRenderer sr;
+    /// <summary>
+    /// SpriteRenderer utilisé pour retourner le sprite.
+    /// </summary>
+    SpriteRenderer _sr;
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
+    /// <summary>
+    /// Initialisation des composants nécessaires.
+    /// </summary>
     void Start()
     {
-        rb = bird.GetComponent<Rigidbody2D>();
-        anim = bird.GetComponentInChildren<Animator>();
-        detectionSol = bird.GetComponentInChildren<DetectionSol>();
-        sr = bird.GetComponentInChildren<SpriteRenderer>();
+        _rb = bird.GetComponent<Rigidbody2D>();
+
+        _anim = bird.GetComponentInChildren<Animator>();
+
+        _detectionSol =
+            bird.GetComponentInChildren<DetectionSol>();
+
+        _sr = bird.GetComponentInChildren<SpriteRenderer>();
+
         base.Start();
     }
 
-    // Update is called once per frame
+    /// <summary>
+    /// Mise à jour appelée à chaque frame.
+    /// Gère les déplacements et les animations.
+    /// </summary>
     void Update()
     {
+        // Vérifie si l’oiseau est dans l’eau
         if (IsInWater)
         {
-           
-            rb.gravityScale = 1f;
-            rb.linearVelocity = new Vector2(0, 0);
+            _rb.gravityScale = 1f;
+
+            // Stop le déplacement
+            _rb.linearVelocity = new Vector2(0, 0);
+
+            // Inflige des dégâts dans l’eau
             DamageInTheWater();
         }
         else
         {
-            rb.linearVelocity = new Vector2(movex * speed, movey * speed);
+            // Déplacement horizontal et vertical
+            _rb.linearVelocity =
+                new Vector2(movex * speed, _movey * speed);
         }
 
+        // Mise à jour des animations
         GererAnimation();
     }
 
+    /// <summary>
+    /// Fonction appelée automatiquement lors du déplacement.
+    /// </summary>
+    /// <param name="inputValue">
+    /// Valeur envoyée par le système d’Input.
+    /// </param>
     void OnMove(InputValue inputValue)
     {
         Vector2 d = inputValue.Get<Vector2>();
+
         movex = d.x;
-        movey = d.y;
+
+        _movey = d.y;
     }
 
+    /// <summary>
+    /// Gère les animations de l’oiseau
+    /// selon son état et ses déplacements.
+    /// </summary>
     void GererAnimation()
     {
+        // Vérifie si l’oiseau n’est pas blessé
         if (!Hurt)
         {
-
-
-            if (movey > 0.1 || !detectionSol.ToucheLeSol)
+            // Vérifie si l’oiseau vole
+            if (_movey > 0.1 || !_detectionSol.ToucheLeSol)
             {
-                IsFlying = true;
+                _IsFlying = true;
             }
 
-            if (detectionSol.ToucheLeSol)
+            // Vérifie si l’oiseau touche le sol
+            if (_detectionSol.ToucheLeSol)
             {
-                IsFlying = false;
+                _IsFlying = false;
             }
 
-            anim.SetBool("IsWalking", (movex > 0.1 || movex < -0.1) && IsFlying == false && !IsInWater);
-            anim.SetBool("IsFlying", IsFlying && !IsInWater);
+            // Animation de marche
+            _anim.SetBool(
+                "IsWalking",
+                (movex > 0.1 || movex < -0.1) &&
+                _IsFlying == false &&
+                !IsInWater
+            );
 
+            // Animation de vol
+            _anim.SetBool(
+                "IsFlying",
+                _IsFlying && !IsInWater
+            );
 
-
+            // Orientation du sprite vers la droite
             if (movex > 0.1f)
             {
-                sr.flipX = true;   // va à droite
+                _sr.flipX = true;
             }
+
+            // Orientation du sprite vers la gauche
             else if (movex < -0.1f)
             {
-                sr.flipX = false;  // va à gauche (par défaut)
+                _sr.flipX = false;
             }
         }
         else
         {
-            anim.SetTrigger("Hurt");
-            Hurt = false; // réinitialise l'état de blessure après avoir déclenché l'animation
+            // Déclenche l’animation de dégâts
+            _anim.SetTrigger("Hurt");
+
+            // Réinitialise l’état de blessure
+            Hurt = false;
         }
-
-
-
     }
-
-
-
-
 }

@@ -1,44 +1,83 @@
+//Valentin
 using UnityEngine;
 
 public class FollowCamera : MonoBehaviour
 {
-    private GameObject target; 
-    public GameObject player;
-    GestionPersonnage gestionPersonnage;
+    /// <summary>
+    /// Cible actuellement suivie par la caméra.
+    /// </summary>
+    private GameObject _target;
 
+    /// <summary>
+    /// GameObject contenant le script GestionPersonnage.
+    /// </summary>
+    public GameObject player;
+
+    /// <summary>
+    /// Référence au script GestionPersonnage.
+    /// </summary>
+    private GestionPersonnage _gestionPersonnage;
+
+    /// <summary>
+    /// Décalage appliqué sur l’axe Z de la caméra.
+    /// </summary>
     public int offsetZ = 0;
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
+
+    /// <summary>
+    /// Initialisation des composants nécessaires.
+    /// </summary>
     void Start()
     {
-        gestionPersonnage = player.GetComponent<GestionPersonnage>();
+        _gestionPersonnage =
+            player.GetComponent<GestionPersonnage>();
     }
 
-    // Update is called once per frame
+    /// <summary>
+    /// Mise à jour appelée à chaque frame.
+    /// Permet de suivre la forme actuellement contrôlée.
+    /// </summary>
     void Update()
     {
-
-        if(gestionPersonnage.currentPersonnage == GestionPersonnage.TypePersonnage.Druide)
+        // Vérifie si le joueur contrôle le druide
+        if(_gestionPersonnage.currentPersonnage ==
+           GestionPersonnage.TypePersonnage.Druide)
         {
-            target = gestionPersonnage.DruideGo;
-        }
-        else if(gestionPersonnage.currentPersonnage == GestionPersonnage.TypePersonnage.Bears)
-        {
-            target = gestionPersonnage.BearGo;
-        }
-        else if(gestionPersonnage.currentPersonnage == GestionPersonnage.TypePersonnage.Fish)
-        {
-            target = gestionPersonnage.FishGo;
-        }
-        else if(gestionPersonnage.currentPersonnage == GestionPersonnage.TypePersonnage.Bird)
-        {
-            target = gestionPersonnage.BirdGo;
+            _target = _gestionPersonnage.DruideGo;
         }
 
-        if(target == null)
+        // Vérifie si le joueur contrôle l’ours
+        else if(_gestionPersonnage.currentPersonnage ==
+                GestionPersonnage.TypePersonnage.Bears)
+        {
+            _target = _gestionPersonnage.BearGo;
+        }
+
+        // Vérifie si le joueur contrôle le poisson
+        else if(_gestionPersonnage.currentPersonnage ==
+                GestionPersonnage.TypePersonnage.Fish)
+        {
+            _target = _gestionPersonnage.FishGo;
+        }
+
+        // Vérifie si le joueur contrôle l’oiseau
+        else if(_gestionPersonnage.currentPersonnage ==
+                GestionPersonnage.TypePersonnage.Bird)
+        {
+            _target = _gestionPersonnage.BirdGo;
+        }
+
+        // Vérifie si une cible existe
+        if(_target == null)
         {
             return;
         }
 
-        transform.position = new Vector3(target.transform.position.x, target.transform.position.y, offsetZ);
+        // Déplace la caméra sur la position de la cible
+        transform.position =
+            new Vector3(
+                _target.transform.position.x,
+                _target.transform.position.y,
+                offsetZ
+            );
     }
 }

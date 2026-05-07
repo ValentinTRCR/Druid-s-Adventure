@@ -1,6 +1,6 @@
-using System;
+
 using System.IO;
-using System.Runtime.CompilerServices;
+
 using UnityEngine;
 
 public class PlayerStatManager : MonoBehaviour
@@ -23,6 +23,7 @@ public class PlayerStatManager : MonoBehaviour
             return;
         }
         filePath = Application.persistentDataPath + "/StatData.json";
+        Debug.Log(filePath);
         if (System.IO.File.Exists(filePath))
         {
             string donnee = File.ReadAllText(filePath);
@@ -36,8 +37,8 @@ public class PlayerStatManager : MonoBehaviour
         {
             health = 100;
             maxHealth = 100;
-            maxMana = 100;
-            mana = 100;
+            maxMana = 60;
+            mana = 60;
         }
        
         Instance = this;

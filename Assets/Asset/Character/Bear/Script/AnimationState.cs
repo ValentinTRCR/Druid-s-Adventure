@@ -2,19 +2,19 @@ using UnityEngine;
 
 public class AnimationState : MonoBehaviour
 {
-    private Bear bear;
+    private Bear _bear;
 
     void Start()
     {
-        bear = GetComponentInParent<Bear>();
+        _bear = GetComponentInParent<Bear>();
     }
     void Attack()
     {
-        bear.EnleverDegat();
+        _bear.EnleverDegat();
     }
 
     void Reset()
     {
-        bear.ResetAttack();
+        _bear.ResetAttack();
     }
 }

@@ -3,26 +3,45 @@ using UnityEngine.UIElements;
 
 public class Pont : MonoBehaviour
 {
-    Levier levier;
-    BoxCollider2D boxCollider;
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
+    /// <summary>
+    /// Référence au levier contrôlant le pont.
+    /// </summary>
+    Levier _levier;
+
+    /// <summary>
+    /// Collider principal du pont.
+    /// </summary>
+    BoxCollider2D _boxCollider;
+
+    /// <summary>
+    /// Initialisation des composants nécessaires.
+    /// </summary>
     void Start()
     {
-        levier = GetComponentInChildren<Levier>();
+        _levier = GetComponentInChildren<Levier>();
     }
 
-    // Update is called once per frame
+    /// <summary>
+    /// Mise à jour appelée à chaque frame.
+    /// Active ou désactive le collider du pont
+    /// selon l’état du levier.
+    /// </summary>
     void Update()
     {
-        if (levier.isActivated)
+        // Vérifie si le levier est activé
+        if (_levier.isActivated)
         {
-            boxCollider = GetComponent<BoxCollider2D>();
-            boxCollider.enabled = false;
-        }else
-        {
-            boxCollider = GetComponent<BoxCollider2D>();
-            boxCollider.enabled = true;
-        }
+            _boxCollider = GetComponent<BoxCollider2D>();
 
+            // Désactive le collider du pont
+            _boxCollider.enabled = false;
+        }
+        else
+        {
+            _boxCollider = GetComponent<BoxCollider2D>();
+
+            // Active le collider du pont
+            _boxCollider.enabled = true;
+        }
     }
 }

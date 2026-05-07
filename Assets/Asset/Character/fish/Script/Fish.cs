@@ -4,84 +4,174 @@ using UnityEngine.InputSystem;
 
 public class Fish : Entity
 {
+    /// <summary>
+    /// GameObject principal du poisson.
+    /// </summary>
     public GameObject fish;
 
-    Rigidbody2D rb;
+    /// <summary>
+    /// Rigidbody2D utilisé pour gérer les déplacements et la physique.
+    /// </summary>
+    Rigidbody2D _rb;
 
-    Animator anim;
+    /// <summary>
+    /// Animator utilisé pour gérer les animations.
+    /// </summary>
+    Animator _anim;
 
-    float movey;
+    /// <summary>
+    /// Valeur du déplacement vertical récupérée via l’Input System.
+    /// </summary>
+    float _movey;
 
-    float speed = 7f;
+    /// <summary>
+    /// Vitesse maximale du poisson.
+    /// </summary>
+    float _speed = 7f;
 
-    float acceleration = 4f;
+    /// <summary>
+    /// Vitesse d’accélération du poisson.
+    /// </summary>
+    float _acceleration = 4f;
 
-    Vector2 VelocityCourante;
+    /// <summary>
+    /// Vitesse actuelle utilisée pour lisser le déplacement.
+    /// </summary>
+    Vector2 _velocityCourante;
 
-    float rotationSpeed = 200f;
+    /// <summary>
+    /// Vitesse de rotation du poisson.
+    /// </summary>
+    float _rotationSpeed = 200f;
 
-    SpriteRenderer spriteRenderer;
+    /// <summary>
+    /// SpriteRenderer utilisé pour retourner le sprite.
+    /// </summary>
+    SpriteRenderer _spriteRenderer;
 
- 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
+    /// <summary>
+    /// Initialisation des composants nécessaires.
+    /// </summary>
     void Start()
     {
-        rb = fish.GetComponent<Rigidbody2D>();
-        anim = fish.GetComponentInChildren<Animator>();
-        spriteRenderer = fish.GetComponentInChildren<SpriteRenderer>();
+        _rb = fish.GetComponent<Rigidbody2D>();
+
+        _anim = fish.GetComponentInChildren<Animator>();
+
+        _spriteRenderer =
+            fish.GetComponentInChildren<SpriteRenderer>();
+
         base.Start();
     }
 
-    // Update is called once per frame
+    /// <summary>
+    /// Mise à jour appelée à chaque frame.
+    /// Gère les déplacements et les animations.
+    /// </summary>
     void Update()
     {
+        // Vérifie si le poisson est dans l’eau
         if(IsInWater)
         {
-            rb.gravityScale = 0f;
-            Vector2 VitesseVoulue = new Vector2(movex * speed,movey * speed);
-            VelocityCourante = Vector2.Lerp(VelocityCourante, VitesseVoulue, acceleration * Time.deltaTime);
-            rb.linearVelocity = VelocityCourante;
+            // Désactive la gravité
+            _rb.gravityScale = 0f;
 
-            if(Mathf.Abs(movex) > 0.1 || Mathf.Abs(movey) > 0.1)
+            // Calcul de la vitesse souhaitée
+            Vector2 VitesseVoulue =
+                new Vector2(
+                    movex * _speed,
+                    _movey * _speed
+                );
+
+            // Lissage du déplacement
+            _velocityCourante =
+                Vector2.Lerp(
+                    _velocityCourante,
+                    VitesseVoulue,
+                    _acceleration * Time.deltaTime
+                );
+
+            _rb.linearVelocity = _velocityCourante;
+
+            // Vérifie si le poisson est en mouvement
+            if(Mathf.Abs(movex) > 0.1 ||
+               Mathf.Abs(_movey) > 0.1)
             {
-               float angleVise = Mathf.Atan2(movey, movex) * Mathf.Rad2Deg;
-               float angleActuel = fish.transform.rotation.eulerAngles.z;
+                // Calcul de l’angle visé
+                float angleVise =
+                    Mathf.Atan2(_movey, movex) *
+                    Mathf.Rad2Deg;
 
-               float nouvelAngle = Mathf.MoveTowardsAngle(angleActuel, angleVise, rotationSpeed * Time.deltaTime);
-               fish.transform.rotation = Quaternion.Euler(0, 0, nouvelAngle);
+                // Angle actuel du poisson
+                float angleActuel =
+                    fish.transform.rotation.eulerAngles.z;
+
+                // Rotation progressive
+                float nouvelAngle =
+                    Mathf.MoveTowardsAngle(
+                        angleActuel,
+                        angleVise,
+                        _rotationSpeed * Time.deltaTime
+                    );
+
+                // Application de la rotation
+                fish.transform.rotation =
+                    Quaternion.Euler(0, 0, nouvelAngle);
             }
-
         }
         else
         {
-           rb.gravityScale = 1f;
-           rb.linearVelocity = new Vector2(0,rb.linearVelocityY);
+            // Réactive la gravité hors de l’eau
+            _rb.gravityScale = 1f;
+
+            // Stop le déplacement horizontal
+            _rb.linearVelocity =
+                new Vector2(0, _rb.linearVelocityY);
         }
 
+        // Mise à jour des animations
         GererAnimation();
     }
 
+    /// <summary>
+    /// Fonction appelée automatiquement lors du déplacement.
+    /// </summary>
+    /// <param name="inputValue">
+    /// Valeur envoyée par le système d’Input.
+    /// </param>
     void OnMove(InputValue inputValue)
     {
         Vector2 d = inputValue.Get<Vector2>();
+
         movex = d.x;
-        movey = d.y;
-        
+
+        _movey = d.y;
     }
 
+    /// <summary>
+    /// Gère les animations et l’orientation du sprite.
+    /// </summary>
     void GererAnimation()
     {
-        if(fish.transform.rotation.eulerAngles.z > 90 && fish.transform.rotation.eulerAngles.z < 270)
+        // Vérifie si le poisson est orienté vers le bas
+        if(fish.transform.rotation.eulerAngles.z > 90 &&
+           fish.transform.rotation.eulerAngles.z < 270)
         {
-            spriteRenderer.flipY = true;
+            _spriteRenderer.flipY = true;
         }
         else
         {
-            spriteRenderer.flipY = false;
+            _spriteRenderer.flipY = false;
         }
 
-        //anim.SetBool("IsSwimming", (movex > 0.1 || movex < -0.1 || movey > 0.1 || movey < -0.1) && IsInWater);
+        // Animation de nage
+        //anim.SetBool(
+        //    "IsSwimming",
+        //    (movex > 0.1 ||
+        //    movex < -0.1 ||
+        //    _movey > 0.1 ||
+        //    _movey < -0.1) &&
+        //    IsInWater
+        //);
     }
-
-    
 }

@@ -3,26 +3,75 @@ using UnityEngine.InputSystem;
 
 public class Water : MonoBehaviour
 {
-    GameObject Entity;
+    /// <summary>
+    /// GameObject actuellement détecté dans l’eau.
+    /// </summary>
+    GameObject _Entity;
 
-    GestionPersonnage gp;
+    /// <summary>
+    /// Référence au script GestionPersonnage.
+    /// </summary>
+    GestionPersonnage _gp;
 
+    /// <summary>
+    /// GameObject du druide.
+    /// </summary>
     public GameObject DruideGo;
+
+    /// <summary>
+    /// GameObject de l’ours.
+    /// </summary>
     public GameObject OursGo;
+
+    /// <summary>
+    /// GameObject du poisson.
+    /// </summary>
     public GameObject FishGo;
+
+    /// <summary>
+    /// GameObject de l’oiseau.
+    /// </summary>
     public GameObject BirdGo;
-    Player DruideCs;
 
-    Bird birdCs;
+    /// <summary>
+    /// Référence au script Player du druide.
+    /// </summary>
+    Player _DruideCs;
 
-    Bear bearCs;
+    /// <summary>
+    /// Référence au script Bird.
+    /// </summary>
+    Bird _birdCs;
 
-    Fish fishCs;
+    /// <summary>
+    /// Référence au script Bear.
+    /// </summary>
+    Bear _bearCs;
 
-    Entity entite;
-    Rigidbody2D rg;
-    float movex;
-    float movey;
+    /// <summary>
+    /// Référence au script Fish.
+    /// </summary>
+    Fish _fishCs;
+
+    /// <summary>
+    /// Entité actuellement dans l’eau.
+    /// </summary>
+    Entity _entite;
+
+    /// <summary>
+    /// Rigidbody2D de l’entité détectée.
+    /// </summary>
+    Rigidbody2D _rg;
+
+    /// <summary>
+    /// Valeur du déplacement horizontal.
+    /// </summary>
+    float _movex;
+
+    /// <summary>
+    /// Valeur du déplacement vertical.
+    /// </summary>
+    float _movey;
 
       // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -36,85 +85,127 @@ public class Water : MonoBehaviour
        
     }
 
+    /// <summary>
+    /// Récupère les valeurs de déplacement envoyées par l’Input System.
+    /// </summary>
+    /// <param name="inputValue">
+    /// Valeur envoyée par le système d’Input.
+    /// </param>
     void OnMove(InputValue inputValue)
     {
         Vector2 d = inputValue.Get<Vector2>();
-        movex = d.x;
-        movey = d.y;
+        _movex = d.x;
+        _movey = d.y;
     }
 
+    /// <summary>
+    /// Fonction appelée lorsqu’un objet entre dans l’eau.
+    /// </summary>
+    /// <param name="collision">
+    /// Collider de l’objet qui entre dans le trigger.
+    /// </param>
     void OnTriggerEnter2D(Collider2D collision)
     {
         Debug.Log("OnTriggerStay2D" + collision.gameObject.name);
-        Entity = collision.gameObject;
-        if(Entity.name == "Ours")
+        _Entity = collision.gameObject;
+
+        // Vérifie si l’objet détecté est l’ours
+        if(_Entity.name == "Ours")
         {
-            bearCs = Entity.GetComponentInParent<Bear>();
-            entite = bearCs;
-            entite.IsInWater = true;
+            _bearCs = _Entity.GetComponentInParent<Bear>();
+            _entite = _bearCs;
+            _entite.IsInWater = true;
         }
-        if(Entity.name == "Druide")
+
+        // Vérifie si l’objet détecté est le druide
+        if(_Entity.name == "Druide")
         {
-            DruideCs = Entity.GetComponentInParent<Player>();
-            entite = DruideCs;
-            entite.IsInWater = true;
+            _DruideCs = _Entity.GetComponentInParent<Player>();
+            _entite = _DruideCs;
+            _entite.IsInWater = true;
         }
-        if(Entity.name == "Poisson")
+
+        // Vérifie si l’objet détecté est le poisson
+        if(_Entity.name == "Poisson")
         {
-            fishCs = Entity.GetComponentInParent<Fish>();
-            entite = fishCs;
-            entite.IsInWater = true;
+            _fishCs = _Entity.GetComponentInParent<Fish>();
+            _entite = _fishCs;
+            _entite.IsInWater = true;
         }
-        if(Entity.name == "Oiseau")
+
+        // Vérifie si l’objet détecté est l’oiseau
+        if(_Entity.name == "Oiseau")
         {
-            birdCs = Entity.GetComponentInParent<Bird>();
-            entite = birdCs;
-            entite.IsInWater = true;
+            _birdCs = _Entity.GetComponentInParent<Bird>();
+            _entite = _birdCs;
+            _entite.IsInWater = true;
         }
-        if(Entity.name == "Abeille")
+
+        // Vérifie si l’objet détecté est l’abeille
+        if(_Entity.name == "Abeille")
         {
-            entite = Entity.GetComponent<Entity>();
-            entite.IsInWater = true;
+            _entite = _Entity.GetComponent<Entity>();
+            _entite.IsInWater = true;
         }
     }
 
+    /// <summary>
+    /// Fonction appelée tant qu’un objet reste dans l’eau.
+    /// </summary>
+    /// <param name="collision">
+    /// Collider de l’objet présent dans le trigger.
+    /// </param>
     void OnTriggerStay2D(Collider2D collision)
     {
-        Entity = collision.gameObject;
-        if(Entity.name == "Ours")
+        _Entity = collision.gameObject;
+
+        // Vérifie si l’objet détecté est l’ours
+        if(_Entity.name == "Ours")
         {
-            bearCs = Entity.GetComponentInParent<Bear>();
-            entite = bearCs;
-            entite.IsInWater = true;
+            _bearCs = _Entity.GetComponentInParent<Bear>();
+            _entite = _bearCs;
+            _entite.IsInWater = true;
         }
-        if(Entity.name == "Druide")
+
+        // Vérifie si l’objet détecté est le druide
+        if(_Entity.name == "Druide")
         {
-            DruideCs = Entity.GetComponentInParent<Player>();
-            entite = DruideCs;
-            entite.IsInWater = true;
+            _DruideCs = _Entity.GetComponentInParent<Player>();
+            _entite = _DruideCs;
+            _entite.IsInWater = true;
         }
-        if(Entity.name == "Poisson")
+
+        // Vérifie si l’objet détecté est le poisson
+        if(_Entity.name == "Poisson")
         {
-            fishCs = Entity.GetComponentInParent<Fish>();
-            entite = fishCs;
-            entite.IsInWater = true;
+            _fishCs = _Entity.GetComponentInParent<Fish>();
+            _entite = _fishCs;
+            _entite.IsInWater = true;
         }
-        if(Entity.name == "Oiseau")
+
+        // Vérifie si l’objet détecté est l’oiseau
+        if(_Entity.name == "Oiseau")
         {
-            birdCs = Entity.GetComponentInParent<Bird>();
-            entite = birdCs;
-            entite.IsInWater = true;
+            _birdCs = _Entity.GetComponentInParent<Bird>();
+            _entite = _birdCs;
+            _entite.IsInWater = true;
         }
     }
 
+    /// <summary>
+    /// Fonction appelée lorsqu’un objet quitte l’eau.
+    /// </summary>
+    /// <param name="collision">
+    /// Collider de l’objet qui quitte le trigger.
+    /// </param>
     void OnTriggerExit2D(Collider2D collision)
     {
-        
-        if (entite != null)
+        // Vérifie si une entité était détectée
+        if (_entite != null)
         {
-            entite.IsInWater = false;
-            Entity = null;
-            entite = null;
+            _entite.IsInWater = false;
+            _Entity = null;
+            _entite = null;
         }
     }
 }

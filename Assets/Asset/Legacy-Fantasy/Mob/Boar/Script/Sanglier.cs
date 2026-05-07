@@ -3,70 +3,144 @@ using UnityEngine;
 
 public class Sanglier : Entity
 {
+    /// <summary>
+    /// États possibles du sanglier.
+    /// </summary>
     public enum State
     {
         Patrouille,
         Chase,
         Stunt,
     }
+
     //variable mouvement
+
+    /// <summary>
+    /// Vitesse actuelle du sanglier.
+    /// </summary>
     public float speed;
 
+    /// <summary>
+    /// Vitesse utilisée lorsque le sanglier poursuit le joueur.
+    /// </summary>
     public float chaseSpeed = 4f;
 
+    /// <summary>
+    /// Vitesse utilisée lorsque le sanglier patrouille.
+    /// </summary>
     public float walkSpeed = 2f;
+
+    /// <summary>
+    /// État actuel du sanglier.
+    /// </summary>
     public State currentState;
 
+    /// <summary>
+    /// Direction actuelle du déplacement.
+    /// </summary>
     public float direction;
 
-    Rigidbody2D rb;
+    /// <summary>
+    /// Rigidbody2D utilisé pour gérer les déplacements et la physique.
+    /// </summary>
+    Rigidbody2D _rb;
 
-    Animator anim;
+    /// <summary>
+    /// Animator utilisé pour gérer les animations.
+    /// </summary>
+    Animator _anim;
+
     //Script Detection
-    private DetectionSolDroite detectionDroite;
-    private DetectionSolGauche detectionGauche;
+
+    /// <summary>
+    /// Détecteur du sol et des murs à droite.
+    /// </summary>
+    private DetectionSolDroite _detectionDroite;
+
+    /// <summary>
+    /// Détecteur du sol et des murs à gauche.
+    /// </summary>
+    private DetectionSolGauche _detectionGauche;
 
     //SpriteRenderer spriteRenderer;
 
-    SpriteRenderer sr;
+    /// <summary>
+    /// SpriteRenderer utilisé pour retourner le sprite.
+    /// </summary>
+    SpriteRenderer _sr;
 
+    /// <summary>
+    /// GameObject du joueur touché ou détecté.
+    /// </summary>
+    GameObject _player;
 
-    GameObject player;
-    Entity entity;
+    /// <summary>
+    /// Entité du joueur permettant d’infliger des dégâts.
+    /// </summary>
+    Entity _entity;
 
     //compteur chase
-    float chaseTime = 0f;
-    float maxChaseTime = 3f;
+
+    /// <summary>
+    /// Timer de poursuite du joueur.
+    /// </summary>
+    float _chaseTime = 0f;
+
+    /// <summary>
+    /// Temps maximum pendant lequel le sanglier poursuit le joueur.
+    /// </summary>
+    float _maxChaseTime = 3f;
+
     //compteur stunt
-    float stuntTime = 0f;
-    float maxStuntTime = 3f;
 
-    DetecterPlayer detecterPlayer;
+    /// <summary>
+    /// Timer de l’état étourdi.
+    /// </summary>
+    float _stuntTime = 0f;
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
+    /// <summary>
+    /// Temps maximum pendant lequel le sanglier reste étourdi.
+    /// </summary>
+    float _maxStuntTime = 3f;
+
+    /// <summary>
+    /// Script permettant de détecter le joueur.
+    /// </summary>
+    DetecterPlayer _detecterPlayer;
+
+    /// <summary>
+    /// Initialisation des composants nécessaires.
+    /// </summary>
     void Start()
     {
         IsDead = false;
-        rb = GetComponent<Rigidbody2D>();
+        _rb = GetComponent<Rigidbody2D>();
         currentState = State.Patrouille;
         direction = 1f;
-        detectionDroite = GetComponentInChildren<DetectionSolDroite>();
-        detectionGauche = GetComponentInChildren<DetectionSolGauche>();
-        anim = GetComponentInChildren<Animator>();
-        sr = GetComponentInChildren<SpriteRenderer>();
-        detecterPlayer = GetComponentInChildren<DetecterPlayer>();
+        _detectionDroite = GetComponentInChildren<DetectionSolDroite>();
+        _detectionGauche = GetComponentInChildren<DetectionSolGauche>();
+        _anim = GetComponentInChildren<Animator>();
+        _sr = GetComponentInChildren<SpriteRenderer>();
+        _detecterPlayer = GetComponentInChildren<DetecterPlayer>();
         speed = walkSpeed;
     }
 
-    // Update is called once per frame
+    /// <summary>
+    /// Mise à jour appelée à chaque frame.
+    /// Gère les états, les déplacements et les animations du sanglier.
+    /// </summary>
     void Update()
     {
-        if (detecterPlayer.chasePlayer && currentState != State.Stunt)
+        // Si le joueur est détecté et que le sanglier n’est pas étourdi,
+        // il passe en mode poursuite.
+        if (_detecterPlayer.chasePlayer && currentState != State.Stunt)
         {
             currentState = State.Chase;
             speed = chaseSpeed;
         }
+
         //Debug.Log("Current State: " + currentState);
+
         switch (currentState)
         {
             case State.Patrouille:
@@ -79,141 +153,170 @@ public class Sanglier : Entity
                 Stunt();
                 break;
         }
+
         GererAnimation();
     }
 
+    /// <summary>
+    /// Gère le déplacement de patrouille du sanglier.
+    /// </summary>
     void Patrouille()
     {
         verifierSiIlestAuSolOuEstBloqueParUnMur();
         Flip();
-        rb.linearVelocity = new Vector2(direction * speed, rb.linearVelocity.y);
+        _rb.linearVelocity = new Vector2(direction * speed, _rb.linearVelocity.y);
     }
 
+    /// <summary>
+    /// Vérifie si le sanglier est encore au sol
+    /// ou s’il est bloqué par un mur.
+    /// </summary>
     void verifierSiIlestAuSolOuEstBloqueParUnMur()
     {
-        if (detectionDroite.estAuSolDroite == true && detectionGauche.estAuSolGauche == false)
+        if (_detectionDroite.estAuSolDroite == true && _detectionGauche.estAuSolGauche == false)
         {
 
             direction = 1f;
         }
-        else if (detectionDroite.estAuSolDroite == false && detectionGauche.estAuSolGauche == true)
+        else if (_detectionDroite.estAuSolDroite == false && _detectionGauche.estAuSolGauche == true)
         {
 
             direction = -1f;
         }
-        if(detectionDroite.bloquer == true)
+        if(_detectionDroite.bloquer == true)
         {
             direction = -1f;
         }
-        else if(detectionGauche.bloquer == true)
+        else if(_detectionGauche.bloquer == true)
         {
             direction = 1f;
         }
     }
 
+    /// <summary>
+    /// Retourne le sprite selon la direction du sanglier.
+    /// </summary>
     void Flip()
     {
         if (direction == 1f)
         {
-            sr.flipX = true;
+            _sr.flipX = true;
         }
         else
         {
-            sr.flipX = false;
+            _sr.flipX = false;
         }
     }
 
+    /// <summary>
+    /// Gère la poursuite du joueur.
+    /// </summary>
     void Chase()
     {
-        rb.linearVelocity = new Vector2(direction * speed, rb.linearVelocity.y);
+        _rb.linearVelocity = new Vector2(direction * speed, _rb.linearVelocity.y);
         Flip();
 
-        if (chaseTime < maxChaseTime)
+        if (_chaseTime < _maxChaseTime)
         {
-            chaseTime += Time.deltaTime;
+            _chaseTime += Time.deltaTime;
         }
         else
         {
-            detecterPlayer.chasePlayer = false;
+            _detecterPlayer.chasePlayer = false;
             currentState = State.Patrouille;
             speed = walkSpeed;
-            chaseTime = 0f;
+            _chaseTime = 0f;
         }
 
     }
 
+    /// <summary>
+    /// Gère l’état étourdi du sanglier.
+    /// </summary>
     void Stunt()
     {
-        rb.linearVelocity = Vector2.zero;
-        detecterPlayer.chasePlayer = false;
-        if (stuntTime < maxStuntTime)
+        _rb.linearVelocity = Vector2.zero;
+        _detecterPlayer.chasePlayer = false;
+        if (_stuntTime < _maxStuntTime)
         {
-            stuntTime += Time.deltaTime;
+            _stuntTime += Time.deltaTime;
         }
         else
         {
             currentState = State.Patrouille;
-            stuntTime = 0f;
+            _stuntTime = 0f;
         }
     }
 
+    /// <summary>
+    /// Gère les animations du sanglier selon son état.
+    /// </summary>
     void GererAnimation()
     {
         if (!Hurt)
         {
             if (currentState == State.Patrouille)
             {
-                anim.SetBool("isWalking", true);
-                anim.SetBool("isRunning", false);
+                _anim.SetBool("isWalking", true);
+                _anim.SetBool("isRunning", false);
             }
             else if (currentState == State.Chase)
             {
-                anim.SetBool("isRunning", true);
-                anim.SetBool("isWalking", false);
+                _anim.SetBool("isRunning", true);
+                _anim.SetBool("isWalking", false);
             }
             else if (currentState == State.Stunt)
             {
-                anim.SetBool("isWalking", false);
-                anim.SetBool("isRunning", false);
+                _anim.SetBool("isWalking", false);
+                _anim.SetBool("isRunning", false);
             }
         }
         else
         {
-            anim.SetTrigger("Hurt");
+            _anim.SetTrigger("Hurt");
             Hurt = false;
         }
     }
 
     //fonction pour savoir si il rentre en collision avec le joueur ou un mur
     //si cette un joueur il lui inflige des dégats et le repousse sinon il rentre en stunt
+
+    /// <summary>
+    /// Fonction appelée lorsqu’une collision commence.
+    /// Permet d’infliger des dégâts au joueur ou
+    /// de mettre le sanglier en état étourdi.
+    /// </summary>
+    /// <param name="collision">
+    /// Collision détectée.
+    /// </param>
     void OnCollisionEnter2D(Collision2D collision)
     {
         Debug.Log("Collision avec: " + collision.gameObject.name + " tag: " + collision.gameObject.tag);
         if (collision.gameObject.tag == "Player" && currentState == State.Chase)
         {
-            player = collision.gameObject;
-            if (player.name == "Ours")
+            _player = collision.gameObject;
+            if (_player.name == "Ours")
             {
-                entity = player.GetComponentInParent<Bear>();
+                _entity = _player.GetComponentInParent<Bear>();
 
             }
-            if (player.name == "Druide")
+            if (_player.name == "Druide")
             {
-                entity = player.GetComponentInParent<Player>();
+                _entity = _player.GetComponentInParent<Player>();
 
             }
-            if (player.name == "Poisson")
+            if (_player.name == "Poisson")
             {
-                entity = player.GetComponentInParent<Fish>();
+                _entity = _player.GetComponentInParent<Fish>();
 
             }
-            if (player.name == "Oiseau")
+            if (_player.name == "Oiseau")
             {
-                entity = player.GetComponentInParent<Bird>();
+                _entity = _player.GetComponentInParent<Bird>();
 
             }
 
-            if (entity != null && entity.Hurt == false)
+            if (_entity != null && _entity.Hurt == false)
             {
                 //Debug.Log("Player touché par le sanglier");
                 EnleverDegat();
@@ -228,13 +331,18 @@ public class Sanglier : Entity
     }
 
     //fonction pour enlever les dégats au player
+
+    /// <summary>
+    /// Inflige des dégâts au joueur détecté
+    /// et le repousse avec une force.
+    /// </summary>
     public void EnleverDegat()
     {
-        if (entity != null)
+        if (_entity != null)
         {
-            entity.TakeDamage(1);
-            player.GetComponent<Rigidbody2D>().AddForce(new Vector2(direction * 200, 10), ForceMode2D.Impulse);
-            entity = null;
+            _entity.TakeDamage(1);
+            _player.GetComponent<Rigidbody2D>().AddForce(new Vector2(direction * 200, 10), ForceMode2D.Impulse);
+            _entity = null;
         }
         else
         {

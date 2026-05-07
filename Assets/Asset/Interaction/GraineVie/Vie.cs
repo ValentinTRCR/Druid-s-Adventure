@@ -2,22 +2,29 @@ using Unity.VisualScripting;
 using UnityEngine;
 
 public class Vie : MonoBehaviour
-{
-    GameManager gm;
+{   
+    /// <summary>
+    /// script GameManager
+    /// </summary>
+    GameManager _gm;
 
     void Start()
     {
-        gm = GetComponentInParent<GameManager>();
+        _gm = GetComponentInParent<GameManager>();
     }
     
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
+    /// Fonction appelée lorsqu’un objet qui le collider
+    /// </summary>
+    /// <param name="collision">
+    /// Collider de l’objet qui quitte le trigger.
+    /// </param>
     void OnTriggerEnter2D(Collider2D collision)
     {
         if (collision.gameObject.CompareTag("Player"))
         {
-            GestionPersonnage gp = collision.gameObject.GetComponentInParent<GestionPersonnage>();
-            gp.VieRecuperer();
-            gm.AjoutOrbreVie();
+            GestionPersonnage _gp = collision.gameObject.GetComponentInParent<GestionPersonnage>();
+            _gp.VieRecuperer();
+            _gm.AjoutOrbreVie();
             Destroy(gameObject);
         }
     }

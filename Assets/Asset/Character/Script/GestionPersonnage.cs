@@ -4,6 +4,9 @@ using UnityEngine.InputSystem;
 
 public class GestionPersonnage : MonoBehaviour
 {
+    /// <summary>
+    /// Liste des différentes formes disponibles pour le personnage.
+    /// </summary>
     public enum TypePersonnage
     {
         Druide,
@@ -11,91 +14,192 @@ public class GestionPersonnage : MonoBehaviour
         Fish,
         Bird
     }
-    public int MaxHealth = 100;
-    private int currentHealth;
-    public int MaxMana = 100;
-    private int currentMana;
 
+    /// <summary>
+    /// Vie maximale du personnage.
+    /// </summary>
+    public int MaxHealth = 100;
+
+    /// <summary>
+    /// Vie actuelle du personnage.
+    /// </summary>
+    private int _currentHealth;
+
+    /// <summary>
+    /// Mana maximale du personnage.
+    /// </summary>
+    public int MaxMana = 100;
+
+    /// <summary>
+    /// Mana actuelle du personnage.
+    /// </summary>
+    private int _currentMana;
+
+    /// <summary>
+    /// Forme actuellement utilisée par le joueur.
+    /// </summary>
     public TypePersonnage currentPersonnage;
 
+    /// <summary>
+    /// GameObject de la forme ours.
+    /// </summary>
     public GameObject BearGo;
+
+    /// <summary>
+    /// GameObject de la forme druide.
+    /// </summary>
     public GameObject DruideGo;
+
+    /// <summary>
+    /// GameObject de la forme poisson.
+    /// </summary>
     public GameObject FishGo;
+
+    /// <summary>
+    /// GameObject de la forme oiseau.
+    /// </summary>
     public GameObject BirdGo;
 
+    /// <summary>
+    /// Position du VFX pour la transformation en ours.
+    /// </summary>
     public GameObject VfxPositionBear;
+
+    /// <summary>
+    /// Position du VFX pour la transformation en druide.
+    /// </summary>
     public GameObject VfxPositionDruide;
+
+    /// <summary>
+    /// Position du VFX pour la transformation en poisson.
+    /// </summary>
     public GameObject VfxPositionFish;
+
+    /// <summary>
+    /// Position du VFX pour la transformation en oiseau.
+    /// </summary>
     public GameObject VfxPositionBird;
 
-
-
+    /// <summary>
+    /// Effet visuel joué lors d’une transformation.
+    /// </summary>
     public GameObject Vfx;
 
-    private Bear bear;
-    private Player Druide;
+    /// <summary>
+    /// Référence au script de l’ours.
+    /// </summary>
+    private Bear _bear;
 
-    private Bird bird;
+    /// <summary>
+    /// Référence au script du druide.
+    /// </summary>
+    private Player _Druide;
 
-    private Fish fish;
+    /// <summary>
+    /// Référence au script de l’oiseau.
+    /// </summary>
+    private Bird _bird;
 
-    Vector2 positionActuelle;
+    /// <summary>
+    /// Référence au script du poisson.
+    /// </summary>
+    private Fish _fish;
 
-    Animator animVfx;
+    /// <summary>
+    /// Position actuelle du personnage avant une transformation.
+    /// </summary>
+    Vector2 _positionActuelle;
+
+    /// <summary>
+    /// Animator du VFX de transformation.
+    /// </summary>
+    Animator _animVfx;
 
     //timer
-    float timer = 0f;
-    float timerMax = 1f;
 
+    /// <summary>
+    /// Timer utilisé pour gérer la consommation ou la récupération de mana.
+    /// </summary>
+    float _timer = 0f;
+
+    /// <summary>
+    /// Temps maximum avant de modifier la mana.
+    /// </summary>
+    float _timerMax = 1f;
+
+    /// <summary>
+    /// Texte affichant la vie dans l’interface.
+    /// </summary>
     public GameObject vie;
-    public GameObject mana;    
+
+    /// <summary>
+    /// Texte affichant la mana dans l’interface.
+    /// </summary>
+    public GameObject mana;  
+
+    private bool _isDead;  
 
 
 
 
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
+    /// <summary>
+    /// Initialisation des formes, des statistiques et du VFX.
+    /// </summary>
     void Start()
     {
         currentPersonnage = TypePersonnage.Druide;
-        bear = GetComponent<Bear>();
-        Druide = GetComponent<Player>();
-        bird = GetComponent<Bird>();
-        fish = GetComponent<Fish>();
-        animVfx = Vfx.GetComponentInChildren<Animator>();
-        currentHealth = PlayerStatManager.Instance.health;
-        currentMana = PlayerStatManager.Instance.mana;
+        _bear = GetComponent<Bear>();
+        _Druide = GetComponent<Player>();
+        _bird = GetComponent<Bird>();
+        _fish = GetComponent<Fish>();
+        _animVfx = Vfx.GetComponentInChildren<Animator>();
+        _currentHealth = PlayerStatManager.Instance.health;
+        _currentMana = PlayerStatManager.Instance.mana;
         MaxHealth = PlayerStatManager.Instance.maxHealth;
         MaxMana = PlayerStatManager.Instance.maxMana;
+        if(_currentHealth == 0)
+        {
+            _currentHealth = MaxHealth;
+        }
         Vfx.SetActive(false);
     }
 
-    // Update is called once per frame
+    /// <summary>
+    /// Mise à jour appelée à chaque frame.
+    /// Gère les transformations, la mana, l’interface et la sauvegarde des statistiques.
+    /// </summary>
     void Update()
     {
-        if(currentMana <= 0)
+        if(_currentHealth <= 0)
+        {
+            _isDead = true;
+        }
+        // Si la mana est vide, le joueur retourne automatiquement en druide
+        if(_currentMana <= 0)
         {
             currentPersonnage = TypePersonnage.Druide;
-            currentMana += 1;
-            DruideGo.transform.position = new Vector2(positionActuelle.x, positionActuelle.y);
+            _currentMana += 1;
+            DruideGo.transform.position = new Vector2(_positionActuelle.x, _positionActuelle.y);
 
             Vfx.SetActive(true);
             Vfx.transform.position = new Vector2(VfxPositionDruide.transform.position.x, VfxPositionDruide.transform.position.y);
         }
+
         switch (currentPersonnage)
         {
             case TypePersonnage.Druide:
                 //récupérer position actuelle
-                positionActuelle = DruideGo.transform.position;
+                _positionActuelle = DruideGo.transform.position;
                 //StatDeVie
 
-                Druide.currentHealth = currentHealth;
+                _Druide.currentHealth = _currentHealth;
 
                 //script
-                Druide.enabled = true;
-                bear.enabled = false;
-                bird.enabled = false;
-                fish.enabled = false;
+                _Druide.enabled = true;
+                _bear.enabled = false;
+                _bird.enabled = false;
+                _fish.enabled = false;
                 //gameObject
                 DruideGo.SetActive(true);
                 BearGo.SetActive(false);
@@ -105,16 +209,16 @@ public class GestionPersonnage : MonoBehaviour
                 break;
             case TypePersonnage.Bears:
                 //récupérer position actuelle
-                positionActuelle = BearGo.transform.position;
+                _positionActuelle = BearGo.transform.position;
                 //StatDeVie
 
-                bear.currentHealth = currentHealth;
+                _bear.currentHealth = _currentHealth;
 
                 //script
-                Druide.enabled = false;
-                bear.enabled = true;
-                bird.enabled = false;
-                fish.enabled = false;
+                _Druide.enabled = false;
+                _bear.enabled = true;
+                _bird.enabled = false;
+                _fish.enabled = false;
                 //gameObject
 
                 BearGo.SetActive(true);
@@ -127,14 +231,14 @@ public class GestionPersonnage : MonoBehaviour
                 break;
             case TypePersonnage.Fish:
                 //récupérer position actuelle
-                positionActuelle = FishGo.transform.position;
+                _positionActuelle = FishGo.transform.position;
                 //Stat de vie et de mana
-                fish.currentHealth = currentHealth;
+                _fish.currentHealth = _currentHealth;
                 // script
-                Druide.enabled = false;
-                bear.enabled = false;
-                bird.enabled = false;
-                fish.enabled = true;
+                _Druide.enabled = false;
+                _bear.enabled = false;
+                _bird.enabled = false;
+                _fish.enabled = true;
                 // GameObject
                 FishGo.SetActive(true);
                 BearGo.SetActive(false);
@@ -144,16 +248,16 @@ public class GestionPersonnage : MonoBehaviour
                 break;
             case TypePersonnage.Bird:
                 //récupérer position actuelle
-                positionActuelle = BirdGo.transform.position;
+                _positionActuelle = BirdGo.transform.position;
                 //Stat de vie et de mana
 
-                bird.currentHealth = currentHealth;
+                _bird.currentHealth = _currentHealth;
 
                 //script
-                bird.enabled = true;
-                Druide.enabled = false;
-                bear.enabled = false;
-                fish.enabled = false;
+                _bird.enabled = true;
+                _Druide.enabled = false;
+                _bear.enabled = false;
+                _fish.enabled = false;
                 //GameObject
                 BirdGo.SetActive(true);
                 FishGo.SetActive(false);
@@ -162,124 +266,206 @@ public class GestionPersonnage : MonoBehaviour
                 // Handle Bird specific logic
                 break;
         }
-        timer += Time.deltaTime;
-        if (timer >= timerMax)
+
+        _timer += Time.deltaTime;
+        if (_timer >= _timerMax)
         {
             //Debug.Log("une seconde");
+
+            // Consommation de mana en forme ours
             if (currentPersonnage == TypePersonnage.Bears)
             {
-                currentMana  -= 6;
+                _currentMana  -= 6;
             }
+
+            // Consommation de mana en forme poisson
             else if (currentPersonnage == TypePersonnage.Fish)
             {
-                currentMana -= 8;
+                _currentMana -= 8;
             }
+
+            // Consommation de mana en forme oiseau
             else if (currentPersonnage == TypePersonnage.Bird)
             {
-                currentMana -= 8;
-            }else if(currentPersonnage == TypePersonnage.Druide && currentMana < MaxMana)
-            {
-                currentMana += 1;
+                _currentMana -= 8;
             }
-            timer = 0;
+
+            // Régénération de mana en forme druide
+            else if(currentPersonnage == TypePersonnage.Druide && _currentMana < MaxMana)
+            {
+                _currentMana += 10;
+                if(_currentMana >= MaxMana)
+                {
+                    _currentMana = MaxMana;
+                }
+            }
+
+            _timer = 0;
         }
+
         afficherVieEtMana();
-        PlayerStatManager.Instance.SaveStats(currentHealth,currentMana,MaxHealth,MaxMana);
+
+        // Sauvegarde les statistiques actuelles
+        PlayerStatManager.Instance.SaveStats(_currentHealth,_currentMana,MaxHealth,MaxMana);
     }
 
     // sers à mettre a jour depuis la classe entity
+    /// <summary>
+    /// Met à jour la vie actuelle depuis la classe Entity.
+    /// </summary>
+    /// <param name="health">
+    /// Nouvelle valeur de vie actuelle.
+    /// </param>
     public void MettreAjourVieEtMana(int health)
     {
-        currentHealth = health;
+        _currentHealth = health;
     }
 
+    /// <summary>
+    /// Récupère de la mana.
+    /// Si la mana dépasse le maximum, le maximum est augmenté.
+    /// </summary>
     public void ManaRecuperer()
     {
-        currentMana += 20;
-        if (currentMana > MaxMana)
+        MaxMana += 20;
+        if (_currentMana > MaxMana)
         {
-            int difference = currentMana - MaxMana;
+            int difference = _currentMana - MaxMana;
             MaxMana += difference;
         }
     }
+
+    /// <summary>
+    /// Récupère de la vie.
+    /// Si la vie dépasse le maximum, le maximum est augmenté.
+    /// </summary>
     public void VieRecuperer()
     {
-        currentHealth += 20;
-        if (currentHealth > MaxHealth)
+        _currentHealth += 20;
+        if (_currentHealth > MaxHealth)
         {
-            int difference = currentHealth - MaxHealth;
+            int difference = _currentHealth - MaxHealth;
             MaxHealth += difference;
         }
     }
 
+    /// <summary>
+    /// Transforme le personnage en druide.
+    /// </summary>
+    /// <param name="inputValue">
+    /// Valeur envoyée par le système d’Input.
+    /// </param>
     void OnChangeDruide(InputValue inputValue)
     {
         if (inputValue.isPressed && TypePersonnage.Druide != currentPersonnage)
         {
 
             currentPersonnage = TypePersonnage.Druide;
-            DruideGo.transform.position = new Vector2(positionActuelle.x, positionActuelle.y);
+            DruideGo.transform.position = new Vector2(_positionActuelle.x, _positionActuelle.y);
 
             Vfx.SetActive(true);
             Vfx.transform.position = new Vector2(VfxPositionDruide.transform.position.x, VfxPositionDruide.transform.position.y);
         }
     }
 
+    /// <summary>
+    /// Transforme le personnage en ours si la mana est suffisante.
+    /// </summary>
+    /// <param name="inputValue">
+    /// Valeur envoyée par le système d’Input.
+    /// </param>
     void OnChangeBear(InputValue inputValue)
     {
-        if (inputValue.isPressed && TypePersonnage.Bears != currentPersonnage && currentMana >= 6)
+        if (inputValue.isPressed && TypePersonnage.Bears != currentPersonnage && _currentMana >= 6)
         {
             currentPersonnage = TypePersonnage.Bears;
-            BearGo.transform.position = new Vector2(positionActuelle.x, positionActuelle.y);
+            BearGo.transform.position = new Vector2(_positionActuelle.x, _positionActuelle.y);
 
             Vfx.SetActive(true);
             Vfx.transform.position = VfxPositionBear.transform.position;
         }
     }
 
+    /// <summary>
+    /// Transforme le personnage en poisson si la mana est suffisante.
+    /// </summary>
+    /// <param name="inputValue">
+    /// Valeur envoyée par le système d’Input.
+    /// </param>
     void OnChangeFish(InputValue inputValue)
     {
-        if (inputValue.isPressed && TypePersonnage.Fish != currentPersonnage && currentMana >= 5)
+        if (inputValue.isPressed && TypePersonnage.Fish != currentPersonnage && _currentMana >= 5)
         {
             currentPersonnage = TypePersonnage.Fish;
-            FishGo.transform.position = new Vector2(positionActuelle.x, positionActuelle.y);
+            FishGo.transform.position = new Vector2(_positionActuelle.x, _positionActuelle.y);
 
             Vfx.SetActive(true);
             Vfx.transform.position = VfxPositionFish.transform.position;
         }
     }
 
+    /// <summary>
+    /// Transforme le personnage en oiseau si la mana est suffisante.
+    /// </summary>
+    /// <param name="inputValue">
+    /// Valeur envoyée par le système d’Input.
+    /// </param>
     void OnChangeBird(InputValue inputValue)
     {
-        if (inputValue.isPressed && TypePersonnage.Bird != currentPersonnage && currentMana >= 8)
+        if (inputValue.isPressed && TypePersonnage.Bird != currentPersonnage && _currentMana >= 8)
         {
             currentPersonnage = TypePersonnage.Bird;
-            BirdGo.transform.position = new Vector2(positionActuelle.x, positionActuelle.y);
+            BirdGo.transform.position = new Vector2(_positionActuelle.x, _positionActuelle.y);
 
             Vfx.SetActive(true);
             Vfx.transform.position = VfxPositionBird.transform.position;
         }
     }
 
+    /// <summary>
+    /// Désactive le VFX lorsque son animation est terminée.
+    /// </summary>
     public void VfxTerminer()
     {
         Vfx.SetActive(false);
     }
 
     //il sert à afficher la vie pout l'ui
+    /// <summary>
+    /// Affiche la vie et la mana dans l’interface utilisateur.
+    /// </summary>
     void afficherVieEtMana()
     {
-        vie.GetComponent<TextMeshProUGUI>().text = currentHealth + " / " + MaxHealth;
-        mana.GetComponent<TextMeshProUGUI>().text = currentMana + " / " + MaxMana;
+        vie.GetComponent<TextMeshProUGUI>().text = _currentHealth + " / " + MaxHealth;
+        mana.GetComponent<TextMeshProUGUI>().text = _currentMana + " / " + MaxMana;
     }
 
+    /// <summary>
+    /// Retourne la vie actuelle du personnage.
+    /// </summary>
+    /// <returns>
+    /// Vie actuelle.
+    /// </returns>
     public int RetournerVie()
     {
-        return currentHealth;
+        return _currentHealth;
     }
 
+    /// <summary>
+    /// Retourne la mana actuelle du personnage.
+    /// </summary>
+    /// <returns>
+    /// Mana actuelle.
+    /// </returns>
     public int RetournerMana()
     {
-        return currentMana;
+        return _currentMana;
     }
+
+    public bool IsDead()
+    {
+        return _isDead;
+    }
+
+    
 }
